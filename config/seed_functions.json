@@ -1,0 +1,12 @@
+[
+  {
+    "start": "0x000F9860",
+    "source": "ICALL failure: thread start routine (PsCreateSystemThreadEx ctx1), boot1 run.log",
+    "observed": true
+  },
+  {
+    "start": "0x000F98D0",
+    "source": "ICALL failure: thread start routine (PsCreateSystemThreadEx ctx1), boot1 run.log",
+    "observed": true
+  }
+]

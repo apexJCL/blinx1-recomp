@@ -1,0 +1,27 @@
+Install and update (macOS)
+--------------------------
+Open the .dmg and drag BLiNX1.app to Applications, replacing the
+old one for an update. The game files are inside the app. To uninstall,
+drag the app to the Trash; your saves stay in Application Support.
+
+The app is signed ad hoc on the Mac that built it, not notarized. On
+another Mac, Gatekeeper may refuse it: right-click > Open once, or run
+  xattr -dr com.apple.quarantine /Applications/BLiNX1.app
+
+To keep saves and settings somewhere else, set BLINX1_DATA_DIR
+to that folder before starting the game.
+
+Options
+-------
+Your options live in config/config.toml in
+~/Library/Application Support/BLiNX1. The app's
+Contents/Resources/config.default.toml lists every option at its default.
+Copy a line from it into your config.toml and change it there, for
+example "scale = 2" under "[render]" to draw at twice the resolution. An
+update replaces config.default.toml but never touches your file.
+
+F10 (or Guide+A, an Elite controller's P1, or Back+L3 held for a moment)
+opens the in-game menu to change these options while you play; F3 shows
+the frame-rate strip. "enabled = false" under "[menu]" turns the menu
+off.
+

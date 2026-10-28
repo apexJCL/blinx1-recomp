@@ -1,0 +1,43 @@
+# The Python environment for the toolkit's tools and the build. ./blinx1
+# (blinx1.py, standard library only) runs xboxrecomp-cli at the commit
+# game.toml pins; `blinx1 setup` makes .venv/ from uv.lock (`uv sync
+# --locked`) for cmake, ninja, capstone and pefile, and with --dev the
+# tests and ruff. `blinx1 pins refresh` rewrites the lock.
+
+[project]
+name = "blinx1"
+version = "0"
+description = "BLiNX: the time sweeper static recompilation: the tools environment (the CLI is xboxrecomp-cli)"
+requires-python = ">=3.9"
+dependencies = [
+  "cmake",
+  "ninja",
+  # The lifter decodes with capstone: a different version could change gen/.
+  "capstone==5.0.9",
+  "pefile==2024.8.26",
+]
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+# The gates every game runs the same way: `uv run pytest scripts` and
+# `uv run ruff check . && uv run ruff format --check .` (checks.yml too).
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = ["src/recomp/gen", "external", "third_party", ".venv*", "analysis", "build*", "dist", "_local"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+  "E501",     # format wraps code; long strings and comments are left to review
+  "UP031",    # %-formatting is fine; the unsafe fix can change a tuple argument's meaning
+]
+
+[tool.pytest.ini_options]
+testpaths = ["scripts"]
+
+[tool.uv]
+package = false   # a plain environment: nothing here is installed as a project
+# Wheels only: nothing builds from an sdist at install time.
+no-build = true

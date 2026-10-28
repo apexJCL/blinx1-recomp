@@ -1,0 +1,9 @@
+# Line endings that must survive a Windows checkout (core.autocrlf=true):
+# the shell wrapper and the files a bundle carries to Linux and macOS run
+# there, and a CR breaks them. cmd.exe wants CRLF.
+*.sh      text eol=lf
+*.py      text eol=lf
+*.in      text eol=lf
+*.toml    text eol=lf
+blinx1    text eol=lf
+*.cmd     text eol=crlf

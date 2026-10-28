@@ -1,0 +1,149 @@
+# game.toml: what xboxrecomp-cli needs to know about BLiNX: the time sweeper. The CLI reads
+# it on every command; every key and its default is in the CLI's
+# docs/manifest.md. Written by `xbr new`; the CLI never writes it again.
+schema = 1
+
+[game]
+name = "BLiNX: the time sweeper"
+slug = "blinx1"
+
+[xbe]
+path = "game_files/default.xbe"
+# The certificate's title ID: `package` refuses a dump with another one.
+title_id = 0x4D530013
+# Known dumps (sha256 of default.xbe); empty accepts any dump.
+sha256 = []
+
+[cli]
+# The xboxrecomp-cli ./blinx1 runs: the bootstrap clones it at this release
+# tag (or commit) when it finds none; with both, the commit locks the tag.
+# `blinx1 pins refresh` prints the newest release.
+tag = "v0.13.0"
+commit = "33390f64995b00ac7003a764b154b7855de3f4bd"
+url = "https://github.com/apexJCL/xboxrecomp-cli.git"
+
+[toolkit]
+# `blinx1 setup` clones it into external/xboxrecomp at this commit. A
+# release tag pins it too: tag = "..." (branch is then optional).
+url = "https://github.com/apexJCL/xboxrecomp.git"
+# The first public tag with everything BLiNX 1 uses: the in-game menu, the
+# USB pad source the pad layer reads and the RAM cache partition.
+tag = "blinx2-v0.7.0"
+branch = "blinx2/portability"
+commit = "178657afe161329724f7a9bf03b4be82e42c70f6"
+
+[toolchain]
+# The llvm-mingw release the windows target cross-compiles with, on every host.
+llvm_mingw = "20260922"
+
+[pipeline]
+# Stamped into every generated file: fixed for the life of the game.
+game_name = "BLiNX: the time sweeper"
+gen = "src/recomp/gen"
+out = "analysis"
+# Function starts the disassembler missed (ICALL failures at runtime).
+seeds = ["config/seed_functions.json"]
+# The toolkit's icall_feedback database belongs to another game: off.
+icall_seeds = false
+exclude_manual = "src/recomp_manual.c"
+
+[pipeline.disasm]
+# Every code section: without the XDK sections (D3D, DSOUND, XGRPH, ...)
+# there are no function boundaries there, and their internal calls become
+# stubs. A title whose XBE flags data sections executable sets
+# text_only = true and names its code sections in extra_sections.
+# BLiNX 1 flags all 56 sections executable; MDL*/MAP* (45 MB) and DOLBY
+# (DSP microcode) are data: no calls from code land in them and they
+# decode to ASCII/zero runs. Code: .text, the XDK libraries and
+# the PSGSFD* middleware (reached through function pointers).
+text_only = true
+extra_sections = ["D3D", "D3DX", "XGRPH", "DSOUND", "PSGSFD00", "PSGSFD_I", "PSGSFD_B", "PSGSFD_P", "XPP"]
+
+[build]
+# The CMake target and file name: build-win/blinx1_recomp.exe
+exe = "blinx1_recomp"
+# windows builds on every host (llvm-mingw); macos builds on a Mac (Apple
+# clang). Drop one to stop `build` offering it.
+targets = ["windows", "macos"]
+# Passed on every packaging configure so a cache cannot keep a non-stock
+# value: the enhancements layer on, every key stock unless a player's
+# config.toml or the environment says otherwise.
+stock_cmake = ["-DXBOXRECOMP_ENHANCE=ON"]
+
+# How much memory one generated-code compile job takes sets how many run
+# at once. Unset, it is estimated (140 MiB per MB of the largest gen/
+# file); after a build, `blinx1 doctor` shows the measured peak on its
+# `build jobs` line, and that figure goes here.
+# [build.resources]
+# gen_job_mib = 1200
+# tool_mib = 1700        # the largest single pipeline tool (disasm)
+# tool_step = "disasm"
+
+[data]
+game_files = "game_files"
+
+# Packaging: a private bundle with your own dump inside. See the CLI's
+# docs/manifest.md, [package].
+[package]
+app = "BLiNX1"
+product = "blinx1-recomp"
+targets = ["windows", "steamos", "macos"]
+# The toolkit links SDL3 directly (window, input, audio); sdl2 stays for
+# hosts whose SDL2 is sdl2-compat over SDL3, as BLiNX 2 lists both.
+brew = ["sdl2", "sdl3", "openssl", "libepoxy"]
+content = "packaging"
+templates = "packaging"
+icon = "xbe"
+
+# The public repo (the CLI's docs/layout.md): `blinx1 public init` once per
+# clone, then each round `blinx1 public export` and the push it prints. The
+# private notes, the patterns and the rewrite rules stay out of it.
+[public]
+url = "git@github.com:apexJCL/blinx1-recomp.git"
+author = "carlos <4037632+apexJCL@users.noreply.github.com>"
+
+# The player build wizard (the CLI's docs/wizard.md): a windowed program
+# that clones this repo at the release tag, checks the host, asks for the
+# dump, a target and these options, and runs package. `./blinx1 wizard
+# build` makes its three downloads from this table at a tag, and
+# .github/workflows/release-wizard.yml attaches them to the release.
+[wizard]
+repo = "https://github.com/apexJCL/blinx1-recomp.git"
+targets = ["windows", "steamos", "macos"]
+# No icon: the CLI's generic gamepad glyph, as BLiNX 2's wizard. The game's
+# art and the Microsoft and Artoon marks are not mine to publish; the
+# bundle's own icon comes from the player's XBE ([package] icon).
+# No [[wizard.fetch]] entries: the clone carries everything else the build
+# needs, and the CLI fetches the toolkit, llvm-mingw and NSIS itself by
+# the pins in [cli], [toolkit] and its setup-pins.json.
+
+# The wizard's open-source credits (xboxrecomp-cli docs/wizard.md,
+# Credits): this repo is mine, listed first, before the CLI's repos.
+[[wizard.credit]]
+name = "blinx1-recomp"
+role = "this recompilation of BLiNX: the time sweeper for PC and Mac"
+license = "MIT"
+url = "https://github.com/apexJCL/blinx1-recomp"
+own = true
+
+# Only the basic tweaks: everything else (filter, anisotropic filtering,
+# pacing, the menu, the RAM cache) is in config.default.toml, which the
+# Options page points to.
+[[wizard.option]]
+key = "scale"
+label = "Render scale"
+hint = "Draws the game sharper on a big screen; needs a faster graphics card."
+kind = "range"
+# The toolkit's render.scale stops at 4 (SCALE_MAX in src/enhance/enhance.c).
+min = 1
+max = 4
+default = 1
+config = "render.scale"
+labels = { "1" = "640×480, as on the Xbox", "2" = "1280×960", "3" = "1920×1440", "4" = "2560×1920, the sharpest" }
+
+[[wizard.option]]
+key = "fullscreen"
+label = "Start fullscreen"
+kind = "bool"
+default = false
+config = "present.fullscreen"

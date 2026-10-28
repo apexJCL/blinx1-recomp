@@ -1,0 +1,38 @@
+Install and update (Windows)
+----------------------------
+Keep this folder together: the setup program copies game_files\ from the
+folder it runs in. Run BLiNX1-@VERSION@-setup.exe. It installs
+for your user only (no administrator rights) to
+%LOCALAPPDATA%\Programs\BLiNX1 and adds a Start Menu entry.
+Running a newer setup installs on top and keeps your saves. Uninstall from
+Settings > Apps; your saves and settings stay in
+%LOCALAPPDATA%\BLiNX1.
+
+Windows may warn before running the setup program or BLiNX1.exe:
+they are built on your machine and not signed. SmartScreen: "More info" >
+"Run anyway". If the folder came as a .zip downloaded or copied from
+another machine, right-click the .zip > Properties > Unblock before
+extracting (Mark of the Web), or Windows asks again for every file.
+
+To keep saves and settings somewhere else, set BLINX1_DATA_DIR
+(a Windows environment variable) to that folder before starting the game.
+
+Options
+-------
+Your options live in config\config.toml in %LOCALAPPDATA%\BLiNX1.
+config.default.toml, in the install folder, lists every option at its
+default. Copy a line from it into your config.toml and change it there,
+for example "scale = 2" under "[render]" to draw at twice the resolution.
+An update replaces config.default.toml but never touches your file.
+
+The game starts in a window. "fullscreen = true" under "[present]" in
+your config.toml starts it fullscreen.
+
+F10 (or Guide+A, or Back+L3 held for a moment) opens the in-game menu to
+change these options while you play; F3 shows the frame-rate strip.
+"enabled = false" under "[menu]" turns the menu off. Elite paddles do
+nothing here (XInput has none). On a Steam Deck, SteamOS keeps Guide+A
+for itself: use Back+L3, or bind R4 to F10 once in Steam Input (the
+game's controller settings > Back Grip Buttons > R4 > Keyboard > F10).
+
+On a Steam Deck use the steamos bundle: its README has the Deck notes.
