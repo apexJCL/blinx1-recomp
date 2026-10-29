@@ -18,8 +18,8 @@ sha256 = []
 # The xboxrecomp-cli ./blinx1 runs: the bootstrap clones it at this release
 # tag (or commit) when it finds none; with both, the commit locks the tag.
 # `blinx1 pins refresh` prints the newest release.
-tag = "v0.13.0"
-commit = "33390f64995b00ac7003a764b154b7855de3f4bd"
+tag = "v0.15.0"
+commit = "277c3366aa4fe59ec9271949db83728956be70dd"
 url = "https://github.com/apexJCL/xboxrecomp-cli.git"
 
 [toolkit]
@@ -27,10 +27,11 @@ url = "https://github.com/apexJCL/xboxrecomp-cli.git"
 # release tag pins it too: tag = "..." (branch is then optional).
 url = "https://github.com/apexJCL/xboxrecomp.git"
 # The first public tag with everything BLiNX 1 uses: the in-game menu, the
-# USB pad source the pad layer reads and the RAM cache partition.
-tag = "blinx2-v0.7.0"
+# USB pad source the pad layer reads and the RAM cache partition, plus the
+# merged triangle batches that keep the snow stages fast.
+tag = "blinx2-v0.8.0"
 branch = "blinx2/portability"
-commit = "178657afe161329724f7a9bf03b4be82e42c70f6"
+commit = "e5a7087201cea886b3b5d72e50f5515581920526"
 
 [toolchain]
 # The llvm-mingw release the windows target cross-compiles with, on every host.

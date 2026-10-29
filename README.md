@@ -1,5 +1,11 @@
 # BLiNX: the time sweeper static recompilation
 
+> [!TIP]
+> **The easy way:** from the first release on, download `blinx1-wizard-*` for
+> your system from the [latest release](https://github.com/apexJCL/blinx1-recomp/releases/latest),
+> point it at your own disc image, and it builds and installs the game for you.
+> The by-hand route is under [Build the game](#build-the-game).
+
 *BLiNX: the time sweeper* was an original Xbox game. This project turns your
 own copy of it into a native program for your PC, Steam Deck or Mac: the
 game's x86 code is lifted to C by the
@@ -171,8 +177,8 @@ This game's own environment keys and the toolkit defaults it changes are in
 
 | Component | Pinned at | Where |
 |---|---|---|
-| xboxrecomp-cli (`xbr`) | tag `v0.13.0`, commit `33390f6` | `game.toml` `[cli]` |
-| xboxrecomp toolkit (fork) | tag `blinx2-v0.7.0`, commit `178657a`, branch `blinx2/portability` | `game.toml` `[toolkit]` |
+| xboxrecomp-cli (`xbr`) | tag `v0.15.0`, commit `277c336` | `game.toml` `[cli]` |
+| xboxrecomp toolkit (fork) | tag `blinx2-v0.8.0`, commit `e5a7087`, branch `blinx2/portability` | `game.toml` `[toolkit]` |
 | llvm-mingw | `20260922` | `game.toml` `[toolchain]`, hashes in `config/setup-pins.json` |
 
 `./blinx1 doctor` reports what is in use and whether it is the pin.

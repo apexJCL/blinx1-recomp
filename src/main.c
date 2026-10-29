@@ -65,6 +65,13 @@
 #ifdef RECOMP_ENV_HAVE_ENHANCE_KEYS   /* the toolkit's opt-in enhancements layer */
 #include "enhance.h"
 #include "enhance_cfg.h"
+#include "draw_distance.h"
+#if defined(__has_include)
+#  if __has_include("mod.h")   /* a toolkit with the mod API (draw_distance) */
+#    include "mod.h"
+#    define BLINX_HAVE_MODS 1
+#  endif
+#endif
 #endif
 
 /*
@@ -974,6 +981,16 @@ static BOOL load_xbe(const char *path, void **out_data, size_t *out_size)
 static void host_enhance_init(void)
 {
 #ifdef RECOMP_ENV_HAVE_ENHANCE_KEYS
+#ifdef BLINX_HAVE_MODS
+    static const struct xbox_mod *mods[2];
+
+    /* draw_distance (draw_distance.c) is a mod: its table goes to the layer
+     * before xbox_enhance_init, which runs its init last and so reads its
+     * keys there. A NULL entry ends the table, so the mod is added only
+     * when built (draw_distance_mod is NULL before mod API v3). */
+    mods[0] = draw_distance_mod();
+    xbox_mod_register_table(mods);
+#endif
     xbox_enhance_init(".", NULL);
     enhance_cfg_report_unused();
     fflush(stderr);

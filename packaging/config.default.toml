@@ -92,3 +92,9 @@ overlay.stats = "F3"      # toggles the stats strip; no key of the game's
 #                         # `package --hud-pack` writes this table itself
 # font = "on"             # a pack's font-atlas entries, "on" or "off"
 # text = "on"             # a pack's baked-text entries, "on" or "off"
+
+# [mods]
+# "draw_distance.enable" = "off"  # "on": objects stay on screen past the
+#                                 # game's 400-unit cutoff (more draws); also
+#                                 # on the menu's Mods page
+# "draw_distance.distance" = 2.0  # 1 .. 4: the cutoff as a multiple of 400

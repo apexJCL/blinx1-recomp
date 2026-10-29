@@ -76,6 +76,8 @@ set(GAME_SOURCES
     src/recomp_manual.c
     src/pad_input.c       # the pad layer: scripts, host pad slots, keyboard
     src/pad_slots.c
+    src/far_cull.c        # the draw_distance mod: guard maths, then the mod
+    src/draw_distance.c
 )
 
 # The recomp pipeline also generates a dispatch header and function declarations.

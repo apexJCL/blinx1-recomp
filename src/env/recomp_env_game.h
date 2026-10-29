@@ -8,11 +8,14 @@
 #ifndef RECOMP_ENV_GAME_H
 #define RECOMP_ENV_GAME_H
 
-/* The pad layer (src/pad_input.c). */
+/* The pad layer (src/pad_input.c) and the draw_distance mod
+ * (src/draw_distance.c). */
 #define RECOMP_ENV_GAME_KEYS(X) \
     X(INPUT_SCRIPT,      CONFIG, "RECOMP_INPUT_SCRIPT",      NULL, "scripted pad: @preset, file or inline script") \
     X(INPUT_STRICT,      CONFIG, "RECOMP_INPUT_STRICT",      NULL, "1: a bad input script ends the run") \
     X(HOST_PAD,          CONFIG, "RECOMP_HOST_PAD",          NULL, "0/1: host gamepads in or out") \
+    X(DRAW_DISTANCE,     CONFIG, "RECOMP_DRAW_DISTANCE",     NULL, "enhancements: mods.draw_distance.enable, off|on (objects drawn past the game's 400-unit cutoff)") \
+    X(DRAW_DISTANCE_SCALE, CONFIG, "RECOMP_DRAW_DISTANCE_SCALE", NULL, "enhancements: mods.draw_distance.distance, 1..4 step 0.25, the cutoff as a multiple of 400 (2)") \
     X(INPUT_TRACE,       TRACE, "input",           "RECOMP_INPUT_TRACE",       "pad states, slots, rumble and file opens") \
     X(PAD_PEEK,          DEBUG, "pad_peek",        NULL,                       "=va:n[:x],...: guest dwords on every scripted pad poll")
 

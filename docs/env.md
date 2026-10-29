@@ -29,6 +29,8 @@ variable still wins.
 | `RECOMP_INPUT_SCRIPT` | scripted pad on port 1: `@preset` (`@skip-intro`: START through the logos, ends idle on the title; `@attract`: the same, then waits for the attract demo), a file of steps, or an inline script (`wait open microsoft.sfd; tap START until open h_title02a.sfd`); grammar in `src/pad_input.c`. A script turns the host pads and the keyboard and mouse off unless the environment names them | `src/pad_input.c:779` |
 | `RECOMP_INPUT_STRICT` | `1`: a script that does not parse, or names an unknown preset, ends the run with exit status 2 before the guest starts | `src/pad_input.c:799` |
 | `RECOMP_HOST_PAD` | `0`/`1`: host gamepads in or out. Unset: in, unless `RECOMP_INPUT_SCRIPT` is set. The first host pad up drives port 1 whatever its XInput or SDL slot, later ones the next free ports, a replugged one its old port; the first pad pressed takes the lowest port held by one never pressed, such as Steam's inert virtual pad (`[INPUT] ... pads=slot:port`, `active=`). A pad pulled from the host is pulled from the title | `src/pad_input.c:813` |
+| `RECOMP_DRAW_DISTANCE` | `mods."draw_distance.enable"`: `off` (stock) or `on`; enhancements layer only. `on` turns on the `draw_distance` mod (`src/draw_distance.c`, openspec change draw-distance-mod): the game's far object cutoff, the constant at `0x1D7394` (400) that `sub_0009AD80` compares with the near side of each bounding sphere, becomes `400 x distance`. Written only over the stock value; a foreign change stops the mod for the run; turning it off or exiting puts 400 back. Set by env, the setting is read-only on the Mods page | `src/draw_distance.c:41` |
+| `RECOMP_DRAW_DISTANCE_SCALE` | `mods."draw_distance.distance"`: `1` to `4` in steps of `0.25` (default `2`), the cutoff as a multiple of 400; out of range is clamped and snapped with one `[MOD]` line | `src/draw_distance.c:45` |
 
 ## Trace
 
@@ -41,6 +43,13 @@ variable still wins.
 | Key | Meaning | Read at |
 |---|---|---|
 | `pad_peek` | `=va:n[:x],...`: guest dwords (float, or hex with `:x`) printed on every scripted pad poll; up to 8 ranges of 32 dwords | `src/pad_input.c:1025` |
+
+Two toolkit debug keys (documented in the toolkit table) were made for
+this game's stage 2 snow: `RECOMP_DEBUG=pb_merge=0` draws every
+guest batch on its own, without merging back-to-back triangle batches into
+one backend draw (the A/B arm for the snow's frame rate), and
+`RECOMP_DEBUG=pb_mlog=N` prints every method of flip N as `[MLOG]` lines,
+which showed the snow's strips follow each other with no method between.
 
 The toolkit's `RECOMP_PAD_PRESS` and `RECOMP_DEBUG=pad_script=` (the older
 `RECOMP_PAD_SCRIPT` spelling still works, with a deprecation line) press on
