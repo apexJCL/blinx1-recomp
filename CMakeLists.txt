@@ -104,6 +104,12 @@ if(TARGET xbox_enhance)
     target_link_libraries(${PROJECT_NAME} PRIVATE xbox_enhance)
 endif()
 
+# present.shader: the toolkit's CRT presets (shaders/) and librashader beside
+# the executable. Guarded so a toolkit without it still builds the game.
+if(COMMAND xboxrecomp_present_shaders)
+    xboxrecomp_present_shaders(${PROJECT_NAME})
+endif()
+
 # The option defaults the layer reads beside the executable, copied from
 # packaging/config.default.toml at build time as a file that depends on it,
 # so a developer build has the defaults layer and an edit of the file

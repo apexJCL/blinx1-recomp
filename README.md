@@ -177,8 +177,8 @@ This game's own environment keys and the toolkit defaults it changes are in
 
 | Component | Pinned at | Where |
 |---|---|---|
-| xboxrecomp-cli (`xbr`) | tag `v0.15.0`, commit `277c336` | `game.toml` `[cli]` |
-| xboxrecomp toolkit (fork) | tag `blinx2-v0.8.0`, commit `e5a7087`, branch `blinx2/portability` | `game.toml` `[toolkit]` |
+| xboxrecomp-cli (`xbr`) | tag `v0.16.0`, commit `5ae107c` | `game.toml` `[cli]` |
+| xboxrecomp toolkit (fork) | tag `blinx2-v0.9.0`, commit `f137ae0`, branch `blinx2/portability` | `game.toml` `[toolkit]` |
 | llvm-mingw | `20260922` | `game.toml` `[toolchain]`, hashes in `config/setup-pins.json` |
 
 `./blinx1 doctor` reports what is in use and whether it is the pin.
