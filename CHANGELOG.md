@@ -12,6 +12,17 @@ No release contains game data: you build the game from your own disc.
 
 ## [Unreleased]
 
+- **The real audio DSP, on by default.** The game's own sound programs now
+  run on the emulated Xbox audio DSP (reverb, effect sends, the game's own
+  mix) instead of a plain stereo fold. `RECOMP_APU_DSP=0` in
+  `config/launch.env` brings the old sound back.
+
+### For developers
+
+- **The RAM cache is now the toolkit's default for every game.**
+  BLiNX 1 keeps `ram_cache = true` in its `config.default.toml`; nothing
+  changes for players.
+
 ## [2026.10.0] - 2026-10-29
 
 **BLiNX: the time sweeper, on your PC, Steam Deck and Mac.** The first

@@ -39,6 +39,25 @@ embedded as it is. Their texts are in the toolkit's LICENSES/
 (MIT-microui.txt, MIT-stb.txt, OFL-1.1-atkinson-hyperlegible.txt).
 
 
+dsp56300
+--------
+
+This game builds the toolkit with -DXBOXRECOMP_APU_DSP=ON (game.toml,
+[build] stock_cmake), so every build links the prebuilt dsp56300 library
+(https://github.com/xemu-project/dsp56300, v1.0.0, MIT, copyright 2026 Matt
+Borgerson) and the Rust standard library and crates it bundles (Apache-2.0
+with the LLVM exception, MIT, Unicode-3.0, Zlib; none GPL or LGPL). The
+toolkit's NOTICE lists every crate, and its LICENSES/ has the texts:
+LICENSES/MIT-dsp56300.txt for dsp56300 itself and
+LICENSES/THIRDPARTY-dsp56300-emu.txt for the bundled crates. A binary
+distribution must carry both.
+
+Configure downloads the library, pinned by sha256 in the toolkit's
+cmake/dsp56300.cmake. An offline build points XBOXRECOMP_DSP56300_ARCHIVE
+at a local copy of that archive; a failed download stops the configure step.
+The device runs by default; RECOMP_APU_DSP=0 goes back to the stub.
+
+
 Game data
 ---------
 

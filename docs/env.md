@@ -20,7 +20,7 @@ variable still wins.
 | Name | Default here | Why |
 |---|---|---|
 | `RECOMP_DISPATCH_GATE` | `1` | DirectSound guards its voice lists with raised IRQL alone, which parallel guest threads break: a corrupted list hangs the game at raised IRQL |
-| `RECOMP_STORAGE_RAM_CACHE` | `1`, through `storage.ram_cache = true` in `packaging/config.default.toml`, not this table | the game rewrites a ring of 300 cache files of 1.9 MB each, about 7 GB of host writes an hour; in memory it costs up to the stock 750 MB cap of RAM and writes nothing. It is a config default, not a `RECOMP_ENV_GAME_DEFAULTS` row, because a value from that row counts as the environment and would beat `ram_cache = false` in `config/config.toml` |
+| `RECOMP_STORAGE_RAM_CACHE` | `1`, through `storage.ram_cache = true` in `packaging/config.default.toml` and the toolkit's own default (on for every game since the tracker item), not this table | the game rewrites a ring of 300 cache files of 1.9 MB each, about 7 GB of host writes an hour; in memory it costs up to the stock 750 MB cap of RAM and writes nothing. It is a config default, not a `RECOMP_ENV_GAME_DEFAULTS` row, because a value from that row counts as the environment and would beat `ram_cache = false` in `config/config.toml` |
 
 ## Config
 

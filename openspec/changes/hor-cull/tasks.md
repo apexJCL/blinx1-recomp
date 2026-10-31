@@ -36,3 +36,8 @@
   the cull still widens, so it processes 9-19% more batches that are
   clipped away. A cost, not a visual change; the CPU backend is outside the
   routine gates
+- [ ] 4.4 The camera lens light effect (lens flare) is cut at the old 4:3
+  edges at wide ratios (the user, 2026-10-30). Find whether it is a
+  screen-space sprite pass sized to 4:3, a render-target sample (the
+  `hor-plus-fullscreen-fx` rule) or a cull on the light's projected x, and
+  fix it with 4.2, since both show at the 4:3 columns

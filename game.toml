@@ -18,8 +18,8 @@ sha256 = []
 # The xboxrecomp-cli ./blinx1 runs: the bootstrap clones it at this release
 # tag (or commit) when it finds none; with both, the commit locks the tag.
 # `blinx1 pins refresh` prints the newest release.
-tag = "v0.16.0"
-commit = "5ae107ca1259cfa4f3aab221d138b5f641688c1b"
+tag = "v0.17.0"
+commit = "af5649d15fedb09eac8fd76f05f55edd39816e42"
 url = "https://github.com/apexJCL/xboxrecomp-cli.git"
 
 [toolkit]
@@ -29,9 +29,9 @@ url = "https://github.com/apexJCL/xboxrecomp.git"
 # A public tag with everything BLiNX 1 uses: the in-game menu with its
 # Shaders page, the USB pad source the pad layer reads and the RAM cache
 # partition, plus the merged triangle batches that keep the snow stages fast.
-tag = "blinx2-v0.9.0"
+tag = "blinx2-v0.10.0"
 branch = "blinx2/portability"
-commit = "f137ae0703c41a13f57737552d705c32c9bd8e83"
+commit = "a0c51a5c2db4ce0d2dcc4091552fc2d0a0e56f99"
 
 [toolchain]
 # The llvm-mingw release the windows target cross-compiles with, on every host.
@@ -69,7 +69,8 @@ targets = ["windows", "macos"]
 # Passed on every packaging configure so a cache cannot keep a non-stock
 # value: the enhancements layer on, every key stock unless a player's
 # config.toml or the environment says otherwise.
-stock_cmake = ["-DXBOXRECOMP_ENHANCE=ON"]
+# The APU DSP is compiled in and runs by default (RECOMP_APU_DSP=0: the stub).
+stock_cmake = ["-DXBOXRECOMP_ENHANCE=ON", "-DXBOXRECOMP_APU_DSP=ON"]
 
 # How much memory one generated-code compile job takes sets how many run
 # at once. Unset, it is estimated (140 MiB per MB of the largest gen/
@@ -148,3 +149,159 @@ label = "Start fullscreen"
 kind = "bool"
 default = false
 config = "present.fullscreen"
+
+# xbr extract: the stages as a local Godot project (dist/extract/, game
+# data: never commit or share it). Roots and texlists are the visual tree
+# (B) and texlist of each row of the map table at 0x1EE710 (12-byte rows:
+# collision tree, visual tree, texlist); rows 24-27 and 38-39 repeat MAP11
+# or MDLB10 and the MDLB* rows are boss arenas, left out.
+[extract]
+vertex_header = 16
+packed_normals = true
+angles = "bams"
+texname_size = 32
+textures = "media/{name}.dds"
+
+[[extract.stage]]
+name = "MAP11"
+section = "MAP11"
+root = 0x01DC6CAC
+texlist = 0x01C68620
+
+[[extract.stage]]
+name = "MAP12"
+section = "MAP12"
+root = 0x01C5489C
+texlist = 0x01AE7300
+
+[[extract.stage]]
+name = "MAP13"
+section = "MAP13"
+root = 0x01ACB974
+texlist = 0x0192F040
+
+[[extract.stage]]
+name = "MAP21"
+section = "MAP21"
+root = 0x0220EE68
+texlist = 0x020BD5A0
+
+[[extract.stage]]
+name = "MAP22"
+section = "MAP22"
+root = 0x020A103C
+texlist = 0x01F6CC80
+
+[[extract.stage]]
+name = "MAP23"
+section = "MAP23"
+root = 0x01F519D8
+texlist = 0x01E05880
+
+[[extract.stage]]
+name = "MAP31"
+section = "MAP31"
+root = 0x02497CDC
+texlist = 0x023DD000
+
+[[extract.stage]]
+name = "MAP32"
+section = "MAP32"
+root = 0x023BD2D4
+texlist = 0x0231E180
+
+[[extract.stage]]
+name = "MAP33"
+section = "MAP33"
+root = 0x022FF334
+texlist = 0x0221A2E0
+
+[[extract.stage]]
+name = "MAP41"
+section = "MAP41"
+root = 0x026C8ACC
+texlist = 0x02638540
+
+[[extract.stage]]
+name = "MAP42"
+section = "MAP42"
+root = 0x0262887C
+texlist = 0x02591520
+
+[[extract.stage]]
+name = "MAP43"
+section = "MAP43"
+root = 0x0257B064
+texlist = 0x024B64A0
+
+[[extract.stage]]
+name = "MAP51"
+section = "MAP51"
+root = 0x0297716C
+texlist = 0x028B5030
+
+[[extract.stage]]
+name = "MAP52"
+section = "MAP52"
+root = 0x0289AAB4
+texlist = 0x027ECA70
+
+[[extract.stage]]
+name = "MAP53"
+section = "MAP53"
+root = 0x027C4ADC
+texlist = 0x026ECE68
+
+[[extract.stage]]
+name = "MAP61"
+section = "MAP61"
+root = 0x02D231C8
+texlist = 0x02C2BF60
+
+[[extract.stage]]
+name = "MAP62"
+section = "MAP62"
+root = 0x02BDE9E0
+texlist = 0x02ADF660
+
+[[extract.stage]]
+name = "MAP63"
+section = "MAP63"
+root = 0x02AA6BD8
+texlist = 0x029AAF00
+
+[[extract.stage]]
+name = "MAP81"
+section = "MAP81"
+root = 0x02FC51FC
+texlist = 0x02F318E0
+
+[[extract.stage]]
+name = "MAP82"
+section = "MAP82"
+root = 0x02F05E1C
+texlist = 0x02E62460
+
+[[extract.stage]]
+name = "MAP83"
+section = "MAP83"
+root = 0x02E2CA74
+texlist = 0x02D882C0
+
+[[extract.stage]]
+name = "MAP91"
+section = "MAP91"
+root = 0x031CC5DC
+texlist = 0x03144628
+
+[[extract.stage]]
+name = "MAP92"
+section = "MAP92"
+root = 0x03137944
+texlist = 0x030A7870
+
+[[extract.stage]]
+name = "MAP93"
+section = "MAP93"
+root = 0x030936CC
+texlist = 0x0301A1B8
