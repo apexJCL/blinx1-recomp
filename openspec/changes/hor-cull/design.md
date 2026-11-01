@@ -95,3 +95,88 @@ On the Deck (D3D11 under Proton, the same exe as the final code, 21:9,
 - over the 2500 flips after demo start + 120, 5970.2 batches per flip,
   against 5970.0 on Metal for the same window. The demo is the same on
   both backends, and so is the culling.
+
+## Follow-ups 4.2 and 4.4: the seam and the lens flare
+
+Both showed at the old 4:3 columns, but they have different causes.
+Neither is a cull. Both are the toolkit's Hor+ placement treating a
+scene pass as a 4:3 one.
+
+### 4.2: the seam is the glow pass
+
+The game's glow chain works in two steps:
+
+- C8AF571F downsamples the padded 640x480 frame into a padded 320x240
+  target;
+- A71777EA lays that target back over the frame, stretched and blended.
+
+The downsample also binds a 640x480 guest texture on stage 1, a mask.
+`nv2a_aspect_picture` called that a picture, so the toolkit placed the
+batch as a movie, centred. It then filled only the small target's guest
+columns, and its pads stayed black. The composite therefore brightened
+the 4:3 centre alone, with a dark blurred line where the black pads
+bled in.
+
+The fix is in the toolkit (`nv2a_aspect_place_tex`, xboxrecomp
+`fix/blinx1-hor-fx`): a guest picture does not count when the batch
+also samples a padded render target. Such a pass reads the padded
+frame, so it is a post pass and is stretched like the others. Movies
+sample guest textures only and keep their placement. At 4:3 no target
+is padded, so the rule never applies there.
+
+### 4.4: the lens flare is a 2D sprite pass
+
+`sub_00096BB0` draws the flare. It queues one quad per element (pika,
+flare2, flare3, flare4), in guest pixels along the line from the light
+through the centre, through `sub_00091D40`. Their program, 103842EB,
+takes oPos.w from the vertex's z, and z is 1.0 here. One whole w is how
+the toolkit recognises the HUD layer (`nv2a_aspect_layer_w`), so the
+flare was:
+
+- kept in the 4:3 centre, which is right, since its positions are
+  centre-relative;
+- scissored to the 4:3 columns, so it was cut at the old edge;
+- stretched 1.75x as a fade when one quad happened to span the width
+  (flip 2110 at 21:9).
+
+The fix is game-side, in `recomp_manual.c`. A `sub_00096BB0` wrapper
+moves the z of the vertex records the call queued up by one ulp. The
+batch is then no longer on a whole w, so the toolkit draws it as 3D:
+still centred, but over the full padded width. The divide by w moves x
+and y by under 1e-4 of a pixel. The flare draws without depth. At 4:3,
+or in a build without the layer, the wrapper is the generated body
+alone.
+
+A toolkit rule, for example "additive 2D is scene, not HUD", would also
+reach other games' HUD glows and needs its own cross-game check. The
+game knows which draw is its flare, so the fix stays in the game repo.
+
+### Measured (D3D11, native Windows on the PC, attract demo, 150 s)
+
+A seam metric (`runs/blinx1-hor-fx/tools/dip.py`) takes, at each 4:3
+edge, the darkest column within 6 px over the mean of the columns 12 px
+either side (1.0 means no seam). The median over gameplay dumps 30-80:
+
+| aspect | before | after |
+| --- | ---: | ---: |
+| 21:9 | 0.629 | 0.948 |
+| 16:9 | 0.623 | 0.954 |
+
+After the fix the value matches the texture's own variation. Column
+means across the left edge of one 21:9 dump run 112 → 88 → 69 → 107
+before and 112 → 110 → 108 → 107 after.
+
+The flare fix changes only the side bands. Against the seam-only build,
+the 4:3 centre of every dump is byte-identical, and the flare and lamp
+glow now continue into the bands. The trace no longer lists the flare
+textures as 2D.
+
+At 4:3, every dump from the demo start (dump 28) on is byte-identical
+to main's build. The title-screen dumps before it differ between any
+two runs, including two runs of one exe, because the title background
+is timed. Presents per second are unchanged (0 mismatched).
+
+Metal mirrors the placement rule in code. The flare fix is game-side
+and is the same on both backends. Metal was not run for this change: no
+Mac builds outside release rounds. Its check is a follow-up for the
+next Mac round.

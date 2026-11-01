@@ -12,16 +12,50 @@ No release contains game data: you build the game from your own disc.
 
 ## [Unreleased]
 
+## [2026.11.0] - 2026-11-01
+
+**Real console sound, cleaner CRT shaders and a friendlier menu.**
+
 - **The real audio DSP, on by default.** The game's own sound programs now
   run on the emulated Xbox audio DSP (reverb, effect sends, the game's own
   mix) instead of a plain stereo fold. `RECOMP_APU_DSP=0` in
   `config/launch.env` brings the old sound back.
+- **CRT shaders fixed at high scales.** The shader picture sits in the
+  game's frame, and the scanlines no longer band at render scale 2 or 3.
+- **Shader profiles.** Chain up to 8 shaders, tune them, save them by
+  name on the Shaders page and switch between them. On/off effects are
+  toggles now, not sliders.
+- **A friendlier menu.** Changed rows are marked, Save and Revert work
+  from any page, leaving with unsaved changes asks first, and the
+  selected row explains itself in the footer.
+- **Widescreen, one step closer.** With a wide `display.aspect` the seam
+  at the old 4:3 edge is gone and the camera's lens flare reaches across
+  the whole screen. The default stays 4:3 until wider ratios are checked
+  through the game.
 
 ### For developers
 
+- **Pins:** xboxrecomp-cli v0.19.0 and toolkit blinx2-v0.12.0, up from
+  v0.16.0 and blinx2-v0.9.0, the same as BLiNX 2's release.
+- **Hor+ fixes:** the toolkit no longer takes a post pass that reads the
+  padded frame for a movie and puts it back at 4:3 (the seam), and the
+  game's lens-flare wrapper draws over the side bands.
+- **Lifter:** the toolkit lifts the 8- and 16-bit one-operand `mul`,
+  `imul`, `div` and `idiv` as the CPU runs them. 21 sites in gen change;
+  in one, a function was handed a float that the old lift had turned
+  into 0 or NaN.
+- **Why the DSP is on:** it is the faithful path; the stub skipped the
+  game's effects mix. The default now lives in the toolkit for every
+  game.
 - **The RAM cache is now the toolkit's default for every game.**
   BLiNX 1 keeps `ram_cache = true` in its `config.default.toml`; nothing
   changes for players.
+- **Per-title hard disk:** dev runs without `RECOMP_HDD_DIR` now use
+  `<data>/xboxrecomp/<title id>`, copying old saves once from the shared
+  root. Installed builds are unchanged.
+- **Extraction:** `blinx1 extract` writes the owner's stages to a local
+  Godot project from the `[extract]` table in `game.toml`; nothing it
+  writes is shared.
 
 ## [2026.10.0] - 2026-10-29
 
@@ -116,5 +150,6 @@ the title is not fully checked yet, so expect crashes and report them.
 - **Native Windows is tested:** the wizard's fresh and patch builds passed
   on a stock Windows 11 PC.
 
-[Unreleased]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.10.0...HEAD
+[Unreleased]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.11.0...HEAD
+[2026.11.0]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.10.0...v2026.11.0
 [2026.10.0]: https://github.com/apexJCL/blinx1-recomp/releases/tag/v2026.10.0

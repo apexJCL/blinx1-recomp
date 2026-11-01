@@ -175,6 +175,56 @@ void sub_0009AD80(void)
         MEMF(0x3AE6A0) = p11;
 }
 
+/* ── Hor+: the lens flare off the 2D layer ───────────────────
+ *
+ * sub_00096BB0 draws a light's lens flare: quads along the line from the
+ * light's screen position through the centre, in guest pixels, queued
+ * through sub_00091D40 as 2D records (0x34 bytes at [0x8EC3E4]: type 1 a
+ * header, 2 a vertex, 3 the end; the vertex's x, y, z at +0x10..+0x18).
+ * Their program (103842EB) takes oPos.w from the vertex's z, which
+ * sub_00091D40 sets to 1.0 here, so the batch lands on one whole w: the
+ * toolkit's Hor+ takes it for the HUD layer (nv2a_aspect_layer_w), keeps it
+ * in the 4:3 centre and clips it to the 4:3 columns. A flare running into
+ * the side bands is cut at the old edge, and a quad that spans the width
+ * is stretched as a fade.
+ *
+ * The flare is part of the scene, not the HUD: its positions are already
+ * right relative to the centre, it only must not be clipped. Moving each of
+ * its vertices' z one ulp up takes it off the whole-w layer, so the
+ * toolkit draws it as 3D: still centred, but over the full padded width.
+ * The divide by w moves x and y by under 1e-4 of a pixel; the flare draws
+ * without depth, and the fog term moves as little.
+ *
+ * 4:3 and builds without the layer (s_cull_scale 0): the generated body
+ * alone, stock. */
+extern void sub_00096BB0_gen(void);
+
+void sub_00096BB0(void)
+{
+    uint32_t p, end;
+
+    if (!s_cull_init)
+        cull_init();
+    if (!s_cull_scale) {
+        RECOMP_ABI_CALL(0x00096BB0u, sub_00096BB0_gen);
+        return;
+    }
+    p = MEM32(0x8EC3E4);
+    RECOMP_ABI_CALL(0x00096BB0u, sub_00096BB0_gen);
+    end = MEM32(0x8EC3E4);
+    /* [p, end) is what this call queued: nothing drains or rewinds the
+     * 0x8EC3E4 queue during sub_00096BB0 (sub_00098D00 reads it after the
+     * scene is built). A pointer that went back or jumped means that no
+     * longer holds, and the records are left alone. */
+    if (end < p || end - p > 0x34u * 4096u)
+        return;
+    /* only a positive, finite, non-zero z: +0.0 gives w 0, never the 2D
+     * layer, and a negative or non-finite one is not the flare's */
+    for (; p < end; p += 0x34u)
+        if (MEM32(p) == 2u && MEM32(p + 0x18u) - 1u < 0x7F7FFFFFu)
+            MEM32(p + 0x18u) += 1u;
+}
+
 /* ── The mod frame: the pad poll ─────────────────────────────
  *
  * sub_000A2DE0 reads the pads (sub_00076E20, XAPI) once per main-loop
