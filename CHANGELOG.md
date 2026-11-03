@@ -12,6 +12,44 @@ No release contains game data: you build the game from your own disc.
 
 ## [Unreleased]
 
+## [2026.11.1] - 2026-11-03
+
+**The Windows build wizard works again, and your saves can travel.**
+2026.11.0's wizard could stop partway on Windows; this patch fixes it
+and brings a mouse-friendly menu along.
+
+- **Windows wizard fixed.** Builds on a Windows PC with Git's default
+  settings finish again: the toolkit's shader files stay LF, so the
+  package step no longer refuses `shaders/param-kinds.toml`, text is
+  written as UTF-8 whatever the system code page, and Retry works after
+  a failed step.
+- **Move your saves.** The menu's new Saves page exports your saves to a
+  zip and imports one on another PC. Your current saves are backed up
+  first, and the game closes so its next start loads the imported ones.
+- **Share your settings.** The Files page exports your settings or a
+  shader profile and imports one back, with a file browser in the menu.
+- **The menu takes the mouse.** Hover, click, drag sliders and scroll;
+  an on-screen keyboard pops up for renames on a touch screen.
+- **A tidier menu.** Compact and expanded sizes (R3), a toolbar that
+  folds to icons and button glyphs in the footer.
+
+### For developers
+
+- **Pins:** xboxrecomp-cli v0.20.0 and toolkit blinx2-v0.13.0, up from
+  v0.19.0 and blinx2-v0.12.0, the same as BLiNX 2's 2026.11.1. The CLI
+  writes every text file as UTF-8, clones the toolkit with
+  `core.autocrlf=false` and heals an older CRLF clone; the toolkit's
+  `.gitattributes` keeps packaged text LF. The bootstrap `blinx1.py` is the
+  CLI's refreshed template.
+- **Why a patch release:** the fix lives in the CLI and the toolkit, and
+  the wizard runs the pinned CLI, so the pins had to move before players
+  could build again. The toolkit's menu changes come along.
+- **Mod API 7** (`glyph_name`, the `{ctl:}` token, a per-mod status
+  panel) and **deterministic mode** (`RECOMP_DEBUG=deterministic`, off: a
+  virtual clock, a fixed thread order and OHCI pads on that clock, so a
+  pad replay repeats on one host) are in the toolkit; stock runs read
+  the clock as before.
+
 ## [2026.11.0] - 2026-11-01
 
 **Real console sound, cleaner CRT shaders and a friendlier menu.**
@@ -150,6 +188,7 @@ the title is not fully checked yet, so expect crashes and report them.
 - **Native Windows is tested:** the wizard's fresh and patch builds passed
   on a stock Windows 11 PC.
 
-[Unreleased]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.11.0...HEAD
+[Unreleased]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.11.1...HEAD
+[2026.11.1]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.11.0...v2026.11.1
 [2026.11.0]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.10.0...v2026.11.0
 [2026.10.0]: https://github.com/apexJCL/blinx1-recomp/releases/tag/v2026.10.0
