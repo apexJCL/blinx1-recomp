@@ -141,6 +141,8 @@ off.
 
 ## Getting help
 
+For Windows build failures, see [build diagnostics](docs/windows-build-diagnostics.md).
+
 Open an issue on this repository. Say which platform and bundle version you
 run (the version is in the bundle's name and in `logs/`), what you did, and
 attach the newest `logs/game-*.log` and `logs/xbox_kernel.log` from the
