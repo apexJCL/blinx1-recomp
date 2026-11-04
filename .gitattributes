@@ -5,5 +5,6 @@
 *.py      text eol=lf
 *.in      text eol=lf
 *.toml    text eol=lf
+*.json    text eol=lf
 blinx1    text eol=lf
 *.cmd     text eol=crlf

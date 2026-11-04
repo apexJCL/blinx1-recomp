@@ -12,6 +12,34 @@ No release contains game data: you build the game from your own disc.
 
 ## [Unreleased]
 
+## [2026.11.2] - 2026-11-04
+
+**The menu is readable on the Deck, and another release of the disc
+gets a clear warning.**
+
+- **A menu sized for your screen.** On the Steam Deck the menu is now
+  large enough to read, and on a high-DPI desktop it follows your scale.
+  Render scale and shaders no longer change its size, the Size setting
+  applies at once, and taps reach every button at render scale 2 and 3.
+- **A clear warning for another release.** A dump other than the one
+  this port was made from (another region or revision) now gets a
+  warning, and the wizard asks before building it, instead of a build
+  that fails at the very end with `undefined symbol: sub_0009AD80_gen`
+  and no reason. The port is made from the NTSC-U, version 6 dump.
+
+### For developers
+
+- **Pins:** xboxrecomp-cli v0.21.0 and toolkit blinx2-v0.14.0, up from
+  v0.20.0 and blinx2-v0.13.0. The `[xbe] region`, `version` and
+  `title` keys, which v0.20.0 refused, name the reference release.
+- **`.gitattributes`:** JSON stays LF on Windows checkouts.
+- **New in the CLI:** `saves list` and `saves import`, `[system]
+  languages` for the toolkit's `system.language`, and the release gate
+  (`[xbe] region`, `version`, `title`).
+- **New in the toolkit:** mod API 8 (a 3D debug draw at the flip),
+  `RECOMP_DEBUG=tex_dump=<dir>` for texture packs, and groundwork for an
+  in-window game reset, off by default.
+
 ## [2026.11.1] - 2026-11-03
 
 **The Windows build wizard works again, and your saves can travel.**
@@ -188,7 +216,8 @@ the title is not fully checked yet, so expect crashes and report them.
 - **Native Windows is tested:** the wizard's fresh and patch builds passed
   on a stock Windows 11 PC.
 
-[Unreleased]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.11.1...HEAD
+[Unreleased]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.11.2...HEAD
+[2026.11.2]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.11.1...v2026.11.2
 [2026.11.1]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.11.0...v2026.11.1
 [2026.11.0]: https://github.com/apexJCL/blinx1-recomp/compare/v2026.10.0...v2026.11.0
 [2026.10.0]: https://github.com/apexJCL/blinx1-recomp/releases/tag/v2026.10.0

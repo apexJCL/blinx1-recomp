@@ -11,15 +11,82 @@ slug = "blinx1"
 path = "game_files/default.xbe"
 # The certificate's title ID: `package` refuses a dump with another one.
 title_id = 0x4D530013
-# Known dumps (sha256 of default.xbe); empty accepts any dump.
-sha256 = []
+# The known dump: NTSC-U, version 6, the one recomp_manual.c, the hooks,
+# seeds and symbols are keyed to. Another dump is judged by
+# [xbe.sections] below (blinx1 fingerprint): a header-only change is known,
+# modded data or code builds with a warning, and only bench golden
+# refuses it.
+sha256 = ["771b8b6347d6f4348b79911210c1e17f7a1cd1fbfd3356d56bebee74f04bf745"]
+# Its release, from the certificate (blinx1 fingerprint --toml): a dump of
+# another region or version is "another release" in every warning.
+region = 0x1  # NTSC-U
+version = 6
+title = "BLiNX: the time sweeper"
+
+[xbe.sections]
+".text" = "931840aa55c7c03c3aeeebfc8135897a3efb8f40c4e4e5954dc8f66ab438c3e4"
+"D3D" = "650131fe8555326ae9d17735eae21fbbba8db3801359c1a6b49f77c576083e83"
+"D3DX" = "fe95e406ce8964bf31d649c1f194d5136605372f5b7c3fb597ca4459e8df0e01"
+"XGRPH" = "2a5c19f9ff9a4ea58525ed5f671170735e414050d7b0b9b6a0c1360c7a573390"
+"DSOUND" = "ac18ea67165a7cbe3e81a7910a9c8ff9692648dd70a3cfd428c849a95183de1b"
+"PSGSFD00" = "6b2ec9f819acf14f34379bb9ac291971bed4232e2bd8d83a4942a37f32f9efba"
+"PSGSFD_I" = "9e8b4f317f30b645a6ab7a5de3e090d0db968034cd97146752c0d6634563b833"
+"PSGSFD_B" = "b4c50d03e114101bdffdf544eea3e4377c325b32f2b0b8ac55150535d40a6932"
+"PSGSFD_P" = "e521f92a390f3523c2ca506c15ab015762fa72ee9e317c37f18671a0d5fcea7a"
+"XPP" = "99b56adc4fd8946f4b01fd3c4194462e6dc0e047dc3a5f9128d4f94b01462174"
+".rdata" = "498d516deeb17830f3666dbd7d01560db66c49c7d8faafe7c5cd13de596ce4d7"
+".data" = "caaec4ee294673afe94be51fe775c91510aaf1eab603ad8e7e2b1e4419cb786e"
+"MDLPL" = "0f834f2525bc5a238eb94c7b40039f411292dd4bb3d7ea5586457eb370158993"
+"MDLB1" = "a5dc1ed3a24fd7355699fd58d263ba8f489f01909b89cda4f0c4da0d505f8acc"
+"MDLB10" = "620f60e8771bd99535e2cefadf2df1442e6c197e217895a110ff79095fa9c850"
+"MDLB2" = "801a8c876fe39e3cffd39e60bc12abb7952332eab42fa98a122189b91f965a25"
+"MDLB3" = "d391ed6502a7a97acff7e696ad877967f8db70ddb186bf9ac9d55b7fe8f18d1e"
+"MDLB4" = "302949b9d3d022502784339999eb80e2d4c63908e53ea9a41ce2c8663b321878"
+"MDLB5" = "d5d4bca7d07302326bc57403222d149ba25c56b9476a39631a5ce678381138ce"
+"MDLB6" = "279ad39f7a143c2e86b47ab2e87bb27680db0dc4906b94319fbe6d23e95bbf43"
+"MDLB8" = "1b1df80aedc993cff7c81acf80808c429288914f383ffd7053ba68b9c948ef95"
+"MDLB9" = "55183340f595af06b8e509a32663198dbcdb5a2e3f5bf67453eeb73566e60da9"
+"MDLEN" = "ca6796bad0d674d67e766d80b2be29549e7720dc97b908944a208645fe1aa9cc"
+"MDLB102" = "9c3fe8295fbde8a62f8c1c1d0cc3414aabd8612efc031c0d1e4f438f5c4a6c25"
+"MAP13" = "cf23027eac9c3bf7f235214e1e13925523942dd1536fc60af1ba12f0e6c3916e"
+"MAP12" = "06353cdb3d65ab255137e3103f92ef93b6741ba96d1582eea432c1708f73828d"
+"MAP11" = "d4e9a481b72cc804eb0b2e5c8f4f59af00d3ae0675f5c56947cf7258bc91956d"
+"MDLR2" = "bcad6614b1bd00566a1337116bb35de26f7f37814905bf4899694cb84441ff59"
+"MAP23" = "8251779fbd794085aab1bb972aa2e88c0220ea3dc34498b01ed58948860f4942"
+"MAP22" = "fba04bc055f43057adb34f541cb26bade98ec8da4a32296ff368977d04be7c70"
+"MAP21" = "50fea49ea06f72fc85c520b8633f9c39951cd1f500dc9c38bbb1c48149c27fec"
+"MAP33" = "a1d65869f5e971ce07f604d423d9021233628971ce81655d5ef43067b977db3c"
+"MAP32" = "9dd02412812fc4f43a046c29e1cb829bee1ff4905848394d3324e84c93b313c6"
+"MAP31" = "049c4cfb6c082e6936273c84cd30d67af58b7e7706a4fd95c4454ed7d3caa299"
+"MDLR4" = "ffb135a611426d5959e97ba3604ad0dd0bb755319142562c49c43454a2a8c6ed"
+"MAP43" = "1cf42b13f0a8eae11eaef7a5fdb9aa20470d22e1bdb765f3233fe1212b3f918c"
+"MAP42" = "45d9ed7f667e3a1364dc2537407e32e35e1affd7c3f627824567f51a0a5b9875"
+"MAP41" = "6f63b63f10008878f74f1b687ad0a56182dfb4160e38385dfb36fe5db3eda014"
+"MDLR5" = "ec6d2e4f2b2ed89b3ac5d1a6e69543deebc16ed68679bde1369c9d8cda9aa310"
+"MAP53" = "a5679868ad943a83e2ab442985ec4b51846a56fe473933bd57b04b6dffe58465"
+"MAP52" = "5d900055c2a150335fcf1f84dca7391110554c18becc35ba8aadc705547ef815"
+"MAP51" = "1b959bcf28a3a5836bd890573a1810573637dc98e6c4f2860bc7a32d539e5712"
+"MDLR6" = "8584bbb08adbb387a3d4a6b45b5f3de4bac035c7b4821f19413619b3a688f986"
+"MAP63" = "02b29bf7ec50abff340a8ad007ff98d0520252ba8cc709062d8d103ee422be7f"
+"MAP62" = "f8786a98a8f077c48292ba0074add83ebd6fc5abcd3db48bce50b92815db4fde"
+"MAP61" = "5ddabe07352d281aead03ed75577dcf7af2ff93b7d744e77114600355c745a41"
+"MDLR8" = "bd733dce40a0b69294633c1634ac700e0e785e42b3ebc8f356f0118233688261"
+"MAP83" = "e0176561c3bc922e77e9c750f4c320a17212cebecfc581fe4911072dc05530a2"
+"MAP82" = "6588b832e995f4ca67fa15510ae3534b81e5c164df411a645106f5aba6a31eba"
+"MAP81" = "d82b64e59b70ac7e496ac9dea7c5dd2f77934c861dde3e96d6760154f53744bb"
+"MDLR9" = "9be8c7c962f21ffc89c04c81e95aeeba679a72e0967d9550037528027bfc88ad"
+"MAP93" = "ed2aac41efb7d3184ecf7e1cb69a36b52cfdb2afcaadf2061c84d362c91f11da"
+"MAP92" = "df9c3f5d1591da1ea483a02884ddafa1120ce10f578667eee52142fc62c829f5"
+"MAP91" = "28c2d31d99a9fb675c084d7cb470098569c010b0272953160cc5fad00da1529b"
+"DOLBY" = "f0a884e7a36c81d3f6e5254ea998ced15c326d5212f2dbc341c1afb3817c780d"
+"$$XTIMAGE" = "ed837e76c72eaff7df19c72e42b4b59337b495ad2481adc6ac07dc00bc0af6df"
 
 [cli]
 # The xboxrecomp-cli ./blinx1 runs: the bootstrap clones it at this release
 # tag (or commit) when it finds none; with both, the commit locks the tag.
 # `blinx1 pins refresh` prints the newest release.
-tag = "v0.20.0"
-commit = "d047f6c46fad3d87dd05cf43c776000a72229cd8"
+tag = "v0.21.0"
+commit = "c0ae467ebedf53ac8de82d2fafbb51f8cd334c98"
 url = "https://github.com/apexJCL/xboxrecomp-cli.git"
 
 [toolkit]
@@ -29,9 +96,9 @@ url = "https://github.com/apexJCL/xboxrecomp.git"
 # A public tag with everything BLiNX 1 uses: the in-game menu with its
 # Shaders page, the USB pad source the pad layer reads and the RAM cache
 # partition, plus the merged triangle batches that keep the snow stages fast.
-tag = "blinx2-v0.13.0"
+tag = "blinx2-v0.14.0"
 branch = "blinx2/portability"
-commit = "40ed51de62e05a2edcc1780fade62e5ca5cccdb1"
+commit = "7a97fcd0d108ae03ec2d2f179bafee1c222f9a5f"
 
 [toolchain]
 # The llvm-mingw release the windows target cross-compiles with, on every host.
