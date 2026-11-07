@@ -38,6 +38,14 @@ the toolkit's vendored enhancements overlay: microui (MIT), stb_truetype
 embedded as it is. Their texts are in the toolkit's LICENSES/
 (MIT-microui.txt, MIT-stb.txt, OFL-1.1-atkinson-hyperlegible.txt).
 
+The same build also uses librashader (MPL-2.0) for the present.shader
+option: the toolkit stages its unmodified prebuilt library beside the
+executable, and its licence text is the toolkit's
+LICENSES/MPL-2.0-librashader.txt. The overlay's icon fonts are Lucide (ISC,
+LICENSES/ISC-MIT-lucide.txt) and Kenney Input Prompts (CC0,
+LICENSES/CC0-1.0-kenney-input.txt). The toolkit's NOTICE has the details
+and what a binary distribution must carry.
+
 
 dsp56300
 --------

@@ -78,6 +78,10 @@ set(GAME_SOURCES
     src/pad_slots.c
     src/far_cull.c        # the draw_distance mod: guard maths, then the mod
     src/draw_distance.c
+    src/stick_clamp.c     # the diag_clamp mod: the length clamp, then the mod
+    src/diag_clamp.c
+    src/speed_meter.c     # the speed_readout mod: the readout, then the mod
+    src/speed_readout.c
 )
 
 # The recomp pipeline also generates a dispatch header and function declarations.
@@ -102,12 +106,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE xboxrecomp)
 # host_enhance_init then loads it, and without it main.c builds as before.
 if(TARGET xbox_enhance)
     target_link_libraries(${PROJECT_NAME} PRIVATE xbox_enhance)
-endif()
-
-# present.shader: the toolkit's CRT presets (shaders/) and librashader beside
-# the executable. Guarded so a toolkit without it still builds the game.
-if(COMMAND xboxrecomp_present_shaders)
-    xboxrecomp_present_shaders(${PROJECT_NAME})
 endif()
 
 # The option defaults the layer reads beside the executable, copied from

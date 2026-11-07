@@ -1,22 +1,24 @@
 # BLiNX: the time sweeper options: every key at its default. Each default is
-# the stock behaviour except three: present.pacing sleeps (the frames are the
+# the stock behaviour except four: present.pacing sleeps (the frames are the
 # same as the console's spin and it frees a CPU core), the in-game menu is on
 # (closed, it changes no frame; the game loses only the presses of the chords
-# that open it, Guide+A and Back+L3), and the cache partition lives in memory
+# that open it, Guide+A and Back+L3), the cache partition lives in memory
 # (storage.ram_cache: the game sees the same files, the host disk is
-# spared). The game reads this file on each launch, beside its executable;
-# it is never copied, and an update replaces it, so new keys and defaults
-# reach you. Do not edit it: put the
-# keys you change in config/config.toml (copy a line from here), which the
-# game creates with a short comment the first time and never overwrites.
+# spared), and Square left stick is on (input.pad_square_left: a round pad's
+# full diagonal runs 1.69x as fast as straight, as the keyboard's does).
+# The game reads this file beside its executable on each launch; it is never
+# copied, and an update replaces it, so new keys and defaults reach you. Do
+# not edit it: put the keys you change in config/config.toml (copy a line
+# from here), which the game creates with a short comment the first time
+# and never overwrites.
 # Environment variables (RECOMP_*, config/launch.env in a bundle) override
 # both. Reference: the toolkit's docs/runtime/config.md.
 #
 # For the porter: only a build with the toolkit's enhancements layer reads
 # it (-DXBOXRECOMP_ENHANCE=ON in game.toml's [build] stock_cmake), and
 # `package` stages it only then. Keep a key at the toolkit's default unless
-# the game needs another, and say why beside it. The toolkit's [input] keys
-# (the keyboard and mouse, off by default) are in docs/runtime/config.md.
+# the game needs another, and say why beside it. The toolkit's other [input]
+# keys (the keyboard and mouse, off by default) are in docs/runtime/config.md.
 
 [render]
 scale = 1                 # internal resolution factor: 1 (stock 640x480) to 4
@@ -75,6 +77,14 @@ ram_cache = true          # the cache partition (Z:) in memory, capped at the
                           # rebuilds the ring as it plays. Costs up to 750 MB
                           # of RAM. false: the files go to hdd/Cache as stock
 
+[input]
+pad_square_left = true    # Square left stick: on a round pad a full diagonal
+                          # runs 1.69x as fast as straight, as on the
+                          # keyboard. Smaller pushes keep their speed. false:
+                          # diagonals run at straight speed on a round pad.
+                          # The "Clamp diagonal speed" mod caps every diagonal
+                          # either way
+
 [input.actions]
 # Host actions: what the host does, not the game. To change one, put it
 # under [input.actions] in config/config.toml: it replaces this line whole.
@@ -102,3 +112,12 @@ overlay.stats = "F3"      # toggles the stats strip; no key of the game's
 #                                 # game's 400-unit cutoff (more draws); also
 #                                 # on the menu's Mods page
 # "draw_distance.distance" = 2.0  # 1 .. 4: the cutoff as a multiple of 400
+# "diag_clamp.enable" = "off"     # "on": diagonals run as fast as straight
+#                                 # ahead, as in BLiNX 2 (no faster full
+#                                 # diagonal from the keyboard or Square left
+#                                 # stick); also on the menu's Mods page
+# "speed_readout.enable" = "off"  # "on": a debug card at the top left shows
+#                                 # Blinx's run speed (1.00 straight, 1.69 a
+#                                 # full diagonal with the keyboard or Square
+#                                 # left stick); also
+#                                 # on the Mods page

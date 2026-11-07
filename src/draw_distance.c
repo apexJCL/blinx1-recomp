@@ -13,10 +13,14 @@
  * Every write runs on the guest's thread from the mod frame (on_frame and
  * the on_enable callback both come from xbox_mod_frame), after the pad poll
  * and before the frame's draws.
+ *
+ * A release whose name map lacks gfx_far_cull_dist has no such mod: the
+ * mod frame still runs, the cutoff stays the game's.
  */
 #include <stddef.h>
 #include "draw_distance.h"
 #include "far_cull.h"
+#include "gen/recomp_names.h"
 
 #if defined(RECOMP_ENV_HAVE_ENHANCE_KEYS) && defined(__has_include)
 #  if __has_include("mod.h")
@@ -30,6 +34,9 @@
 #ifdef DRAW_DISTANCE_MOD
 
 #include "enhance_menu.h"
+
+#if XBR_HAVE(gfx_far_cull_dist)
+#define FAR_CULL_VA XBR_VA(gfx_far_cull_dist)   /* float, .rdata */
 
 enum { SET_ENABLE, SET_DISTANCE, SET_N };
 
@@ -151,6 +158,12 @@ const void *draw_distance_mod(void)
 {
     return &s_mod;
 }
+#else /* this release has no gfx_far_cull_dist: no mod */
+const void *draw_distance_mod(void)
+{
+    return NULL;
+}
+#endif
 
 void draw_distance_frame(void)
 {

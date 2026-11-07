@@ -12,6 +12,33 @@ No release contains game data: you build the game from your own disc.
 
 ## [Unreleased]
 
+- **Full diagonal speed on round pads, on by default.** A full diagonal on
+  the left stick now runs 1.69x as fast as straight, as on the keyboard.
+  Turn it off with Controls > Sticks > Square left stick, or cap all
+  diagonals at straight speed with the Clamp diagonal speed mod.
+- **Clamp diagonal speed (optional).** A new mod on the menu's Mods page,
+  off by default: caps diagonal speed at straight speed, as in BLiNX 2.
+  Without it, full diagonals on the keyboard and with Square left stick
+  run 1.69x as fast as straight. Side effect: a diagonal tap no longer
+  counts as a stick shake.
+- **Speed readout (optional, debug).** A new mod on the Mods page, off by
+  default: shows Blinx's run speed in the top-left corner. 1.00 is a full
+  straight push; a full diagonal on the keyboard or with Square left stick
+  reaches 1.69. The card shows only while the menu is enabled (the
+  default).
+
+### For developers
+
+- **Pins:** xboxrecomp-cli v0.22.0 and toolkit blinx2-v0.15.0, up from
+  v0.21.0 and blinx2-v0.14.0.
+- **Present shaders come from the toolkit:** blinx2-v0.15.0 stages
+  librashader and the `shaders/` presets beside every exe that links the
+  enhancements layer, so the game's own `xboxrecomp_present_shaders` call
+  is gone.
+- **Names reach recomp:** the toolkit's `recomp --names` resolves the
+  manual file's hand-written addresses through `[pipeline] names`, so a
+  build from the public pins no longer stops at recomp.
+
 ## [2026.11.2] - 2026-11-04
 
 **The menu is readable on the Deck, and another release of the disc

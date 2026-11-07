@@ -191,11 +191,11 @@ def test_env_rows_and_docs():
 
 def test_wrapper_calls_the_mod_frame():
     src = _read("src", "recomp_manual.c")
-    body = re.search(r"void sub_000A2DE0\(void\)\n\{(.*?)\n\}", src, re.S)
-    assert body, "no sub_000A2DE0 wrapper"
+    body = re.search(r"void XBR_FN\(pad_poll_frame\)\(void\)\n\{(.*?)\n\}", src, re.S)
+    assert body, "no pad_poll_frame wrapper"
     lines = [x.strip() for x in body.group(1).strip().split("\n")]
     assert lines == [
-        "RECOMP_ABI_CALL(0x000A2DE0u, sub_000A2DE0_gen);",
+        "RECOMP_ABI_CALL(XBR_VA(pad_poll_frame), XBR_GEN(pad_poll_frame));",
         "draw_distance_frame();",
     ]
 

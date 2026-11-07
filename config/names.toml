@@ -1,0 +1,121 @@
+# The port's names: every function, global, code site and value the
+# hand-written code and config use, at its address in the reference
+# release (NTSC-U, the dump game.toml's [fingerprint] names). Code refers
+# to them as XBR_FN(name), XBR_GEN(name), XBR_VA(name) and XBR_VAL(name)
+# from gen/recomp_names.h; seeds as {"name": ...}. Another release's
+# addresses are in config/releases/<id>.toml, written by `./blinx1 match`
+# and checked by hand. The CLI's docs/names.md has the forms and the rules.
+
+# ── Hor+ (recomp_manual.c) ──────────────────────────────────────────────
+
+[[name]]
+name = "gfx_sphere_visible"
+kind = "function"
+addr = 0x0009AD80
+note = "the bounding-sphere test: Hor+ side planes and the far cull"
+
+[[name]]
+name = "gfx_lens_flare"
+kind = "function"
+addr = 0x00096BB0
+note = "a light's lens flare, queued as 2D records"
+
+[[name]]
+name = "cam_proj_11"
+kind = "global"
+addr = 0x003AE6A0
+note = "float: the stored projection's _11, read by gfx_sphere_visible"
+
+[[name]]
+name = "hud_2d_queue_ptr"
+kind = "global"
+addr = 0x008EC3E4
+note = "u32: the next free 0x34-byte 2D record"
+
+# ── The mod frame and the draw-distance mod ─────────────────────────────
+
+[[name]]
+name = "pad_poll_frame"
+kind = "function"
+addr = 0x000A2DE0
+note = "reads the pads once per main-loop iteration: the mod frame"
+
+[[name]]
+name = "gfx_far_cull_dist"
+kind = "global"
+addr = 0x001D7394
+note = "float in .rdata, 400.0f: gfx_sphere_visible's far cutoff"
+
+# ── The diag_clamp mod ──────────────────────────────────────────────────
+
+[[name]]
+name = "pad_states"
+kind = "global"
+addr = 0x003F09C0
+note = "u32: pointer to the four 0x1E4-byte pad states"
+
+[[name]]
+name = "pad_state_size"
+kind = "value"
+value = 0x1E4
+note = "bytes per pad state (pad_poll_frame: imul 0x1E4)"
+
+[[name]]
+name = "pad_left_x"
+kind = "value"
+value = 0x14
+note = "offset of a pad state's left stick X, a float in [-1, 1]"
+
+[[name]]
+name = "pad_left_y"
+kind = "value"
+value = 0x18
+note = "offset of a pad state's left stick Y, a float in [-1, 1]"
+
+# ── The speed_readout mod ───────────────────────────────────────────────
+
+[[name]]
+name = "player_ptr"
+kind = "global"
+addr = 0x004FB244
+note = "u32: the player object; sub_000D3D50 reads pad 1 for it (cmp esi, [player_ptr])"
+
+[[name]]
+name = "player_run_speed"
+kind = "value"
+value = 0x30
+note = "offset of the player's run speed, a float: (stick length - 0.4) x 5/3, sub_000D3D50"
+
+# ── Seeds (config/seed_functions.json) ──────────────────────────────────
+
+[[name]]
+name = "sys_thread_start_1"
+kind = "function"
+addr = 0x000F9860
+note = "a thread start routine (PsCreateSystemThreadEx ctx1)"
+
+[[name]]
+name = "sys_thread_start_2"
+kind = "function"
+addr = 0x000F98D0
+note = "a thread start routine (PsCreateSystemThreadEx ctx1)"
+
+# ── The D3D fence (main.c) ──────────────────────────────────────────────
+
+[[name]]
+name = "d3d_device_ptr"
+kind = "global"
+addr = 0x00143B58
+note = "D3D's device pointer, from its fence wait"
+
+[[name]]
+name = "d3d_fence_put"
+kind = "value"
+value = 0x2C
+note = "offset of the pushbuffer PUT copy in the device"
+
+[[name]]
+name = "d3d_fence_get"
+kind = "value"
+value = 0x30
+note = "offset of the GET copy in the device"

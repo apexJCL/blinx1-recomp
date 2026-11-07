@@ -1,200 +1,265 @@
-# BLiNX: the time sweeper static recompilation
+# BLiNX: the time sweeper
 
+*BLiNX: the time sweeper* is a 2002 Xbox action game: you play Blinx, a cat
+who sweeps up time glitches with a vacuum cleaner, and who can stop, slow,
+rewind and record time. This project turns your own copy of the Xbox disc
+into a game that runs on Windows, a Mac or a Steam Deck. No emulator, and
+no disc in a drive once it is built.
+
+![Blinx stops time with the Pause power in the attract demo](docs/images/hero.png)
+
+<!-- xbr:readme:download -->
 > [!TIP]
-> **The easy way:** from the first release on, download `blinx1-wizard-*` for
-> your system from the [latest release](https://github.com/apexJCL/blinx1-recomp/releases/latest),
+> **Get the builder:** download the wizard for your computer from the
+> [latest release](https://github.com/apexJCL/blinx1-recomp/releases/latest),
 > point it at your own disc image, and it builds and installs the game for you.
-> The by-hand route is under [Build the game](#build-the-game).
+>
+> | Your computer | Download |
+> |---|---|
+> | Windows 10 or 11 (x86-64) | `blinx1-wizard-<version>-windows-x64.zip` |
+> | Mac (Apple silicon) | `blinx1-wizard-<version>-macos.zip` |
+> | Steam Deck or Linux PC | `blinx1-wizard-<version>-linux-x64.tar.gz` |
+<!-- /xbr:readme:download -->
 
-*BLiNX: the time sweeper* was an original Xbox game. This project turns your
-own copy of it into a native program for your PC, Steam Deck or Mac: the
-game's x86 code is lifted to C by the
-[xboxrecomp](https://github.com/apexJCL/xboxrecomp) toolkit and compiled
-together with a replacement Xbox kernel, GPU (NV2A) and audio (APU) runtime,
-driven by [xboxrecomp-cli](https://github.com/apexJCL/xboxrecomp-cli). No
-emulator, no disc in a drive: one command builds a private, installable
-bundle from your disc dump.
+**No game is included.** You need your own copy of BLiNX: the time
+sweeper; everything the builder makes from it stays on your machines.
 
-**No game data is included or distributed.** You need your own copy of the
-game; everything built from it stays on your own machines.
+<!-- xbr:readme:release -->
+> [!IMPORTANT]
+> **Supported game version.** This port is built for one release of
+> BLiNX: the time sweeper only:
+>
+> | | |
+> |---|---|
+> | Title | BLiNX: the time sweeper |
+> | Title ID | `0x4D530013` |
+> | Region | NTSC-U |
+> | Version | 6 |
+> | `default.xbe` sha256 | `771b8b6347d6f4348b79911210c1e17f7a1cd1fbfd3356d56bebee74f04bf745` |
+>
+> The wizard checks your copy on its Dump page before it builds; by hand,
+> `./blinx1 fingerprint /path/to/your/disc.iso` says the same. Another
+> region or version is **not supported**: it warns "another release", and
+> the game may crash or misbehave. A modded copy warns too.
+<!-- /xbr:readme:release -->
 
-**Early days.** The boot logos, the title screen and the attract demo run
-on macOS (Metal) and on the Steam Deck (Proton). Play past the title is not
-checked yet: expect crashes.
+## How the builder works
 
-**Contents:** [For players](#for-players) (what you need, platforms, build
-and install, options, the in-game menu, help) |
-[For developers](#for-developers) (build from source, the toolchain and its
-pins, contributing, legal).
+<!-- xbr:readme:wizard -->
+- Checks your computer and fetches the build tools it needs, each download
+  checked against a known checksum. It sends nothing of yours.
+- Checks your disc image or game folder, and says before building when it
+  is another release or a modded copy.
+- Builds an installer for this computer, or for another one: a Windows setup
+  program, a Mac app (`.dmg`) or a Steam Deck bundle that adds the game to
+  Steam.
+- Lets you pick the basic options before building:
+  - Render scale
+  - Start fullscreen
+- Makes small updates for a device that already has a build, and reuses
+  most of the work when you build again.
+<!-- /xbr:readme:wizard -->
 
----
+Step by step, with the SmartScreen and Gatekeeper prompts, and the by-hand
+route: [docs/playing.md](docs/playing.md#build-the-game).
 
-# For players
+## Status
 
-## What you need
+**Early days.** The boot logos, the title screen and the attract demo run,
+with sound, at 4:3 as on the Xbox. You can start
+a game, but play past the title is not checked through the game yet:
+expect crashes, and report them.
 
-| Item | Why |
-|---|---|
-| Your own, legally obtained copy of BLiNX: the time sweeper: a disc image (`.iso`) or the extracted folder with `default.xbe` | The game's code and assets come from it. This project does not provide or link to them, and refuses other titles. |
-| A build machine: a Mac (Apple silicon), a Linux PC or a Windows PC, with about 15 GB free | The bundle is built from your dump on your machine. A Mac can build every target; Linux and Windows build the Windows and SteamOS bundles. |
-| The build wizard, or [uv](https://docs.astral.sh/uv/getting-started/installation/), git and Python 3.9 or newer | The wizard fetches what it needs itself. By hand, `./blinx1` fetches everything else (CMake, Ninja, the compiler, the toolkit), each download checked against a pinned sha256. |
-| A controller, or the keyboard | A pad is player 1. |
-
-## Platforms
-
-| You play on | Bundle | Graphics | Audio | Status |
-|---|---|---|---|---|
-| Steam Deck (stock SteamOS), or a Linux PC with Proton | `steamos` (the Windows build, run under Proton through `umu-run`) | Direct3D 11 (DXVK) | XAudio2 (FAudio) | Boots to the title and the attract demo. |
-| macOS (Apple silicon) | `macos` (`.dmg`) | Metal | SDL3 (CoreAudio) | Boots to the title and the attract demo. |
-| Windows x86-64 | `windows` (a setup program) | Direct3D 11 | XAudio2 | Builds, but **untested on native Windows**. |
-
-The game draws at 640x480 and 4:3, as on the Xbox; a wide window or screen
-is pillarboxed, never stretched. `scale` draws it sharper (see
-[Options](#options)).
-
-**Sister project.** [BLiNX 2: Masters of Time & Space](https://github.com/apexJCL/blinx2-recomp)
-is recompiled with the same toolkit and build wizard, and is much further
-along. Neither repository publishes game files, frames, audio or saves.
-
-## Build the game
-
-**The short route: the build wizard.** From the first release on, each
-[release](https://github.com/apexJCL/blinx1-recomp/releases) has a small
-program for Windows, macOS and Linux (Steam Deck included): download yours,
-point it at your disc image, pick the options, and it builds and installs
-the game for you. It runs the same commands as below, and offers a small
-update build for a device that already has one. Windows SmartScreen and
-macOS Gatekeeper warn about it (it is not signed): on Windows, More info >
-Run anyway; on macOS, right-click > Open once.
-
-**By hand.** Get this project, then go into its folder (in Terminal on macOS
-and Linux, or in PowerShell on Windows):
-
-```sh
-git clone https://github.com/apexJCL/blinx1-recomp.git
-cd blinx1-recomp
-./blinx1 /path/to/your/BLiNX.iso
-```
-
-In PowerShell that is `.\blinx1 C:\path\to\BLiNX.iso`. On Windows, keep the
-path short (`C:\b1`) and run `git config --global core.longpaths true` once
-before the clone.
-
-It checks that the disc is BLiNX: the time sweeper, puts its files in
-`game_files/` in this folder (git ignores it), fetches the toolchain, lifts
-the game and builds a bundle for this computer: macos on a Mac, steamos on
-Linux, windows on Windows. The first run takes a while; later runs only
-rebuild what changed. The bundle lands in `dist/`.
-
-```sh
-./blinx1 package windows|steamos|macos   # the same, for another target
-./blinx1 doctor      # what this machine has, what it can package, and what to install first
-```
-
-Copy the bundle to the machine you play on and install it there:
-
-| Target | Install | Saves, settings and logs |
+| You play on | Graphics | State |
 |---|---|---|
-| **Steam Deck / Linux** (`dist/BLiNX1-<v>-steamos.tar`) | In Desktop Mode: `tar -xf BLiNX1-<v>-steamos.tar`, `cd BLiNX1-<v>-steamos`, `./install.sh --steam` (Steam open: it adds "BLiNX1" as a non-Steam game). A stock Deck has no `umu-run`; the installer offers to download it, or run `./install.sh --fetch-umu`. The first launch downloads the Steam Linux Runtime and GE-Proton, which takes a few minutes. Later versions: `./install.sh`; `./install.sh rollback` goes back one. | `~/Games/BLiNX1/{hdd,config,logs}` |
-| **macOS** (`dist/BLiNX1-<v>.dmg`) | Open the `.dmg` and drag `BLiNX1.app` to Applications (replace the old one to update). The app is signed ad hoc, not notarized: on another Mac, right-click > Open once, or `xattr -dr com.apple.quarantine /Applications/BLiNX1.app`. | `~/Library/Application Support/BLiNX1/{hdd,config,logs}` |
-| **Windows** (`dist/BLiNX1-<v>-windows/`) | Keep the folder together and run `BLiNX1-<v>-setup.exe`. It installs for your user only, with a Start Menu entry. SmartScreen will warn (unsigned, built on your machine): More info > Run anyway. | `%LOCALAPPDATA%\BLiNX1\{hdd,config,logs}` |
+| Windows 10 or 11 | Direct3D 11 | Boots to the title and the attract demo. |
+| Steam Deck, Linux (Proton) | Direct3D 11 (DXVK) | Boots to the title and the attract demo. |
+| Mac (Apple silicon) | Metal | Boots to the title and the attract demo; the screenshots here were taken on it. |
 
-Saves (`hdd/`), settings (`config/`) and logs (`logs/`) live outside the
-program files and survive every update, rollback and uninstall.
+Top known issues (all of them: [docs/playing.md](docs/playing.md#known-issues)):
 
-**Updating to a new release.** Run the new release's wizard on the same
-build folder, or by hand `git pull` and then `./blinx1` in this folder.
+- Play past the title is not checked through the game yet.
+- Widescreen is in, but not checked through the game either, so the
+  default stays 4:3.
 
-**A bundle is private.** It contains your copy of the game and code generated
-from it. Keep it on your own machines; never share, upload or publish it.
+## Showcase
 
-## Options
+![The title screen](docs/images/title.png)
 
-The game reads its options from `config/config.toml` in the data folder
-above. `config.default.toml` (beside the executable,
-`packaging/config.default.toml` here) lists every key at its default; copy
-a line into your `config.toml` to change it, for example `scale = 2` under
-`[render]` to draw at 1280x960. The wizard writes the options you pick
-there. Defaults that differ from the Xbox:
-
-- `storage.ram_cache = true`: the game's cache partition lives in memory
-  (up to 750 MB of RAM). The game rewrites its cache all the time, about
-  7 GB an hour, so this saves your SSD. `ram_cache = false` under
-  `[storage]` puts the files back on the disk.
-- `menu.enabled = true`: the in-game menu below.
-- `present.surface = "auto"`: in SteamOS Game Mode the game hands gamescope
-  the frame to scale instead of a window (`"window"` restores that).
+![Blinx in a lamplit stage of the attract demo](docs/images/stage.png)
 
 ### The in-game menu
 
-F10, Guide+A or Back+L3 held 0.4 s (and, on macOS, an Elite controller's
-P1) opens a menu over the game to change these options while it runs,
-rebind the host actions and turn mods on or off; Save keeps only what you
-changed in `config/config.toml`. The game keeps running behind it and sees
-no input. F3 toggles a stats strip (fps, frame ms, pacing, scale, backend)
-in the window's top right corner. Press L3 first with Back+L3, or both at
-once: the first button still reaches the game until both are down. On a
-Steam Deck, SteamOS keeps Guide+A for itself: use Back+L3, or bind R4 to
-F10 once in Steam Input (the game's controller settings > Back Grip
-Buttons > R4 > Keyboard > F10). `[menu] enabled = false` turns the menu
-off.
+F10 on the keyboard (Guide+A, or Back+L3 held on a pad) opens a menu over
+the game while it keeps running. Its pages: Render (scale, aspect,
+filtering), Shaders, Mods, Stats, Controls, Saves and Files. Most settings
+apply at once; Save keeps what you changed.
 
-## Getting help
+![The in-game menu's Render page over the intro movie](docs/images/menu.png)
 
-Open an issue on this repository. Say which platform and bundle version you
-run (the version is in the bundle's name and in `logs/`), what you did, and
-attach the newest `logs/game-*.log` and `logs/xbox_kernel.log` from the
-data folder. Never attach your game files, a save or the bundle itself.
-Problems with the wizard or the `./blinx1` commands themselves go to
+### Mods and enhancements
+
+Every mod is off, or at the Xbox's setting, unless the table says
+otherwise. Open the in-game menu, go to the page in the table and change
+the option; most apply at once, and Save keeps them for the next start.
+The wizard also asks for the render scale before it builds.
+
+| Mod | Menu page | What it does | Default |
+|---|---|---|---|
+| **Render scale** | Render | Draws the 3D at 1 to 4 times the Xbox's 640x480: sharper, slower. | 1 |
+| **Aspect ratio** | Render | Widescreen: 16:9, 16:10 or 21:9 show more of the stage at the sides instead of stretching it (from the next start). | 4:3 |
+| **Anisotropic filtering** | Render | Sharper ground and walls seen at a slant: 2, 4, 8 or 16. | 0 |
+| **Overscan crop** | Render | Crops the border an old TV hid, and zooms the rest (4:3 only). | 0 |
+| **2D on guest grid** | Render | Keeps 2D art on the Xbox's pixel grid at render scale 2 and up, so tiled menus and HUD show no seams. | off |
+| **Scaling filter** | Render | How the picture is stretched to the window: nearest is crisp, linear smooth, integer whole multiples only. | nearest |
+| **Profile** | Shaders | A shader over the picture: crt-lottes, crt-lottes-fast or crt-hyllian for an old TV's look, fsr to upscale. | Off |
+| **Draw distance** | Mods | Objects stay on screen further away instead of popping in at the game's cutoff: 1 to 4 times as far. | off (2x once on) |
+| **Clamp diagonal speed** | Mods | Caps full diagonals (keyboard, or a pad with Square left stick) at straight speed, as in BLiNX 2. | off |
+| **Speed readout** | Mods | Shows Blinx's run speed on screen: 1.00 straight, up to 1.69 on a full diagonal. | off |
+| **Square left stick** | Controls | Maps a round stick to a square gate, so a pad's full diagonal runs 1.69x as fast as straight, as the keyboard's does. | on |
+
+The pictures below come from the attract demo, run once per setting on a
+Mac with Metal, so only the setting differs: the stock setting on the
+left, the mod's on the right.
+
+#### Render scale
+
+The Xbox drew every game at 640x480. Render scale 3 draws the 3D at
+1920x1440; the wizard asks for it, and Render > Render scale changes it
+while you play.
+
+![Blinx's face in the attract demo at render scale 1, as on the Xbox, and at render scale 3: smoother edges on the goggles, eyes and whiskers](docs/images/pair-scale.png)
+
+#### Aspect ratio
+
+Render > Aspect ratio > 16:9 keeps the game's height of view and shows
+more of the stage at the sides. It takes effect at the next start, and is
+not checked through the game yet.
+
+![The attract demo at 4:3 and at 16:9, where the wider view shows more of the stage at both sides](docs/images/pair-aspect.png)
+
+#### Anisotropic filtering
+
+Render > Anisotropic filtering > 16 keeps a texture sharp where it runs
+away from the camera, as a floor does.
+
+![The grate behind Blinx with anisotropic filtering 0, as on the Xbox, and 16: the bars that run away from the camera stay sharper. Most of the demo looks the same either way](docs/images/pair-aniso.png)
+
+#### Overscan crop
+
+A still shows only a zoom. Its origin: a TV of the time hid a band around
+the picture, so console games kept their HUD away from the border, and
+some left junk there. Overscan crop cuts that band and fills the window
+with the rest. It works at 4:3 only.
+
+#### 2D on guest grid
+
+Above render scale 1 the 3D gets sharper, but 2D art made of tiles (menus,
+the HUD, fonts) can show thin seams where the tiles meet, because each tile
+now samples between the Xbox's pixels. This keeps 2D on the Xbox's own
+pixel grid, as at scale 1: no seams, blockier 2D art.
+
+![The demo's BLiNX logo at render scale 3 with 2D on guest grid off, smoothed between the Xbox's pixels, and on, back on the Xbox's own blockier grid](docs/images/pair-snap.png)
+
+#### Scaling filter
+
+The Xbox drew for a TV; a window is larger, so the picture is stretched to
+fit. Nearest keeps every pixel sharp, linear blends them for a softer
+picture, and integer scales by whole multiples only, with a border, so
+every pixel is the same size.
+
+![Blinx's face with the nearest filter, every pixel sharp, and with linear, softer](docs/images/pair-filter.png)
+
+#### Profile
+
+Shaders > Profile > crt-lottes draws the picture like an old TV, with
+scanlines and a shadow mask; crt-hyllian is another look, and fsr is
+AMD's upscaler instead. The Shaders page tunes each one, and saves a chain
+of them as a profile of your own.
+
+![Blinx's face without a shader and with crt-lottes: scanlines and a shadow mask](docs/images/pair-crt.png)
+
+#### Draw distance
+
+The game drops objects more than 400 units in front of the camera. At
+480 lines that hid the pop-in; at render scale 2 and 3 the picture is
+sharp enough to see things appear. Mods > Draw distance keeps them on
+screen further out: twice the game's cutoff once it is on, up to four
+times. It costs some speed.
+
+<!-- TODO(screenshot): Mods > Draw distance, off and on, a stage with a long view -->
+The attract demo's rooms all sit inside the game's cutoff, so a still of
+it looks the same with the mod off and on; a picture waits for a stage
+with a long view.
+
+#### Clamp diagonal speed
+
+No picture: it changes speed. BLiNX 1 runs full diagonals 1.69 times as
+fast as straight, on the keyboard and on a pad with Square left stick (on
+by default), because the game takes the speed from the stick's length and
+a square's corner is longer than its side. BLiNX 2 capped that; this mod
+caps it here too. One side effect: a diagonal tapped from the centre no longer counts
+as shaking the stick.
+
+#### Speed readout
+
+A small card with Blinx's run speed: 1.00 at a full straight push, up to
+1.69 on a full diagonal on the keyboard or a pad with Square left stick,
+and the peak of about the last second. Outside a stage it shows the last
+value. It was made to measure the mod above.
+
+![The Speed readout card at the top left during the attract demo, reading 1.20 now and 1.22 peak](docs/images/speed-readout.png)
+
+#### Square left stick
+
+No picture: it changes the stick. On by default. The original Xbox pad's
+stick moved in a square gate, so a diagonal reached the corner, and
+BLiNX 1 ran it 1.69 times as fast. Today's pads have round gates and stop
+short of the corner, so this maps a full push to the square's rim; drift
+and smaller pushes keep their speed. To turn it off, open Controls >
+Sticks and switch off Square left stick: diagonals then run at straight
+speed on a round pad. Clamp diagonal speed caps every diagonal either
+way.
+
+## Build requirements and common gotchas
+
+- About 15 GB free for the build, plus room for the installer.
+- A Windows 10 or 11 PC, an Apple silicon Mac, or a Steam Deck or Linux PC
+  (in Desktop Mode on the Deck).
+- An internet connection for the first build (the tools download once).
+- Your copy is the supported version (the box above).
+
+The failures players hit most:
+
+- **"Another release":** your disc is another region or revision than the
+  NTSC-U, version 6 one. The build may stop at the very end, or the game
+  misbehave; only the supported release is.
+- **Mac: "the app is damaged" or cannot be opened:** that is Gatekeeper.
+  Right-click the app and pick Open, once.
+- **Steam Deck: the first launch shows only a notice for a few minutes:**
+  it is downloading Proton; the notice closes when the game starts.
+
+The rest: [docs/playing.md](docs/playing.md#troubleshooting).
+
+## Report a bug
+
+[Open a bug report](https://github.com/apexJCL/blinx1-recomp/issues/new?template=bug_report.yml):
+the form asks for what we need (your game version, the build version, where
+you play, your settings and the logs). Never attach game files, a disc
+image, a save or a built bundle. Problems with the wizard or the `./blinx1`
+commands themselves go to
 [xboxrecomp-cli's issues](https://github.com/apexJCL/xboxrecomp-cli/issues).
 
----
+## More documentation
 
-# For developers
+| Document | For |
+|---|---|
+| [docs/playing.md](docs/playing.md) | building by hand, installing, the options, the in-game menu, known issues, troubleshooting |
+| [docs/developers.md](docs/developers.md) | how the port works, building from source, the toolchain and its pins, contributing |
 
-## Build from source
-
-```sh
-./blinx1 setup      # once: .venv, llvm-mingw, the toolkit (each download sha256-pinned)
-./blinx1 all        # analyze (parse, disasm, funcid, abi), recomp, build
-./blinx1 doctor     # what this machine has, and what is next
-```
-
-Windows: `blinx1` (the `blinx1.cmd` wrapper) or `py -3 blinx1.py`, from a
-short checkout path such as `C:\g\blinx1`.
-
-The build is `build-win/blinx1_recomp.exe`, cross-compiled with llvm-mingw
-on any host, or `build/blinx1_recomp` with Apple clang on a Mac (Metal).
-`src/recomp_manual.c` takes hand-written overrides,
-`config/seed_functions.json` the function starts the disassembler missed,
-and `./blinx1 analyze` then `./blinx1 recomp` regenerate `src/recomp/gen/`
-(never edit it by hand). The CLI's `docs/porting.md` has the loop;
-`game.toml` has every setting, documented in the CLI's `docs/manifest.md`.
-This game's own environment keys and the toolkit defaults it changes are in
-[docs/env.md](docs/env.md).
-
-## The toolchain and its pins
-
-| Component | Pinned at | Where |
-|---|---|---|
-| xboxrecomp-cli (`xbr`) | tag `v0.20.0`, commit `d047f6c` | `game.toml` `[cli]` |
-| xboxrecomp toolkit (fork) | tag `blinx2-v0.13.0`, commit `40ed51d`, branch `blinx2/portability` | `game.toml` `[toolkit]` |
-| llvm-mingw | `20260922` | `game.toml` `[toolchain]`, hashes in `config/setup-pins.json` |
-
-`./blinx1 doctor` reports what is in use and whether it is the pin.
-
-## Contributing
-
-Changes are tracked with [OpenSpec](https://github.com/Fission-AI/OpenSpec)
-under `openspec/changes/<name>/` (proposal, design, tasks, spec deltas).
-Opt-in features default off and never change stock behaviour; generated code
-is never hand-edited; environment variables go through the table and
-`docs/env.md`. Toolkit changes go to
-[apexJCL/xboxrecomp](https://github.com/apexJCL/xboxrecomp), branch
-`blinx2/portability`; CLI changes to
-[apexJCL/xboxrecomp-cli](https://github.com/apexJCL/xboxrecomp-cli). The
-checks (`uv run pytest scripts`, `uv run ruff check .`, `uv run ruff format
---check .`) run on every push.
+**Sister project.** [BLiNX 2: Masters of Time & Space](https://github.com/apexJCL/blinx2-recomp)
+is recompiled with the same toolkit and build wizard, and is much further
+along.
 
 ## Legal
 
@@ -208,7 +273,7 @@ project is not affiliated with them. A bundle made by `blinx1 package`
 contains your copy of the game and code generated from it: it is for your
 own machines only, and is not yours to redistribute.
 
-## License and credits
+### License and credits
 
 MIT, see [LICENSE](LICENSE). Parts of `src/main.c`, `src/recomp_manual.c`
 and `CMakeLists.txt` started from xboxrecomp's MIT-licensed new-game

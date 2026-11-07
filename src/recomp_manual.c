@@ -22,7 +22,8 @@
 #include "recomp_env.h"
 #include <stdint.h>
 #include <stddef.h>   /* ptrdiff_t */
-#include "nv2a_backend_common.h"  /* nv2a_host_opts: display.aspect, the sub_0009AD80 wrapper */
+#include "nv2a_backend_common.h"  /* nv2a_host_opts: display.aspect, the gfx_sphere_visible wrapper */
+#include "gen/recomp_names.h"     /* XBR_FN/GEN/VA: config/names.toml for this release */
 
 /* ── ICALL trace ring buffer ───────────────────────────────── */
 
@@ -138,9 +139,11 @@ recomp_func_t recomp_lookup_manual(uint32_t xbox_va)
  * projection from another thread would break this.
  *
  * 4:3, narrower, or a build without the layer (display.aspect stays 0):
- * s_cull_scale stays 0 and the call is the generated body alone, stock. */
-extern void sub_0009AD80_gen(void);
-
+ * s_cull_scale stays 0 and the call is the generated body alone, stock.
+ *
+ * The addresses are config/names.toml's gfx_sphere_visible and cam_proj_11
+ * (the ones above are the NTSC release's). A release whose map lacks one
+ * of the two builds without the wrapper: stock. */
 static int   s_cull_init;
 static float s_cull_scale;              /* 0: stock */
 
@@ -157,23 +160,29 @@ static void cull_init(void)
     s_cull_init = 1;
 }
 
-void sub_0009AD80(void)
+#if XBR_HAVE(gfx_sphere_visible)
+#if XBR_HAVE(cam_proj_11)
+extern void XBR_GEN(gfx_sphere_visible)(void);
+
+void XBR_FN(gfx_sphere_visible)(void)
 {
     float p11, scaled;
 
     if (!s_cull_init)
         cull_init();
     if (!s_cull_scale) {
-        RECOMP_ABI_CALL(0x0009AD80u, sub_0009AD80_gen);
+        RECOMP_ABI_CALL(XBR_VA(gfx_sphere_visible), XBR_GEN(gfx_sphere_visible));
         return;
     }
-    p11 = MEMF(0x3AE6A0);
+    p11 = MEMF(XBR_VA(cam_proj_11));
     scaled = p11 * s_cull_scale;
-    MEMF(0x3AE6A0) = scaled;
-    RECOMP_ABI_CALL(0x0009AD80u, sub_0009AD80_gen);
-    if (MEMF(0x3AE6A0) == scaled)
-        MEMF(0x3AE6A0) = p11;
+    MEMF(XBR_VA(cam_proj_11)) = scaled;
+    RECOMP_ABI_CALL(XBR_VA(gfx_sphere_visible), XBR_GEN(gfx_sphere_visible));
+    if (MEMF(XBR_VA(cam_proj_11)) == scaled)
+        MEMF(XBR_VA(cam_proj_11)) = p11;
 }
+#endif
+#endif
 
 /* ── Hor+: the lens flare off the 2D layer ───────────────────
  *
@@ -196,22 +205,25 @@ void sub_0009AD80(void)
  * without depth, and the fog term moves as little.
  *
  * 4:3 and builds without the layer (s_cull_scale 0): the generated body
- * alone, stock. */
-extern void sub_00096BB0_gen(void);
+ * alone, stock. So is a release whose map lacks gfx_lens_flare or
+ * hud_2d_queue_ptr: no wrapper. */
+#if XBR_HAVE(gfx_lens_flare)
+#if XBR_HAVE(hud_2d_queue_ptr)
+extern void XBR_GEN(gfx_lens_flare)(void);
 
-void sub_00096BB0(void)
+void XBR_FN(gfx_lens_flare)(void)
 {
     uint32_t p, end;
 
     if (!s_cull_init)
         cull_init();
     if (!s_cull_scale) {
-        RECOMP_ABI_CALL(0x00096BB0u, sub_00096BB0_gen);
+        RECOMP_ABI_CALL(XBR_VA(gfx_lens_flare), XBR_GEN(gfx_lens_flare));
         return;
     }
-    p = MEM32(0x8EC3E4);
-    RECOMP_ABI_CALL(0x00096BB0u, sub_00096BB0_gen);
-    end = MEM32(0x8EC3E4);
+    p = MEM32(XBR_VA(hud_2d_queue_ptr));
+    RECOMP_ABI_CALL(XBR_VA(gfx_lens_flare), XBR_GEN(gfx_lens_flare));
+    end = MEM32(XBR_VA(hud_2d_queue_ptr));
     /* [p, end) is what this call queued: nothing drains or rewinds the
      * 0x8EC3E4 queue during sub_00096BB0 (sub_00098D00 reads it after the
      * scene is built). A pointer that went back or jumped means that no
@@ -224,6 +236,8 @@ void sub_00096BB0(void)
         if (MEM32(p) == 2u && MEM32(p + 0x18u) - 1u < 0x7F7FFFFFu)
             MEM32(p + 0x18u) += 1u;
 }
+#endif
+#endif
 
 /* ── The mod frame: the pad poll ─────────────────────────────
  *
@@ -232,16 +246,19 @@ void sub_00096BB0(void)
  * update and draws. The toolkit's mods run from xbox_mod_frame, which must
  * be called once per guest frame on the guest's thread: here, after the
  * poll, so a mod's writes land before the draws that read them. Without the
- * mod API it does nothing. */
+ * mod API it does nothing. A release whose map lacks pad_poll_frame has no
+ * mod frame: the mods never run there, and the game is stock. */
 #include "draw_distance.h"
 
-extern void sub_000A2DE0_gen(void);
+#if XBR_HAVE(pad_poll_frame)
+extern void XBR_GEN(pad_poll_frame)(void);
 
-void sub_000A2DE0(void)
+void XBR_FN(pad_poll_frame)(void)
 {
-    RECOMP_ABI_CALL(0x000A2DE0u, sub_000A2DE0_gen);
+    RECOMP_ABI_CALL(XBR_VA(pad_poll_frame), XBR_GEN(pad_poll_frame));
     draw_distance_frame();
 }
+#endif
 
 /* ── ICALL failure logging ─────────────────────────────────── */
 

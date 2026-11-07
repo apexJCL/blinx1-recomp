@@ -66,6 +66,9 @@
 #include "enhance.h"
 #include "enhance_cfg.h"
 #include "draw_distance.h"
+#include "diag_clamp.h"
+#include "speed_readout.h"
+#include "gen/recomp_names.h"         /* XBR_VA/VAL: config/names.toml for this release */
 #if defined(__has_include)
 #  if __has_include("mod.h")   /* a toolkit with the mod API (draw_distance) */
 #    include "mod.h"
@@ -786,8 +789,14 @@ static int host_main(void)
      * dump's D3D section; otherwise find it as the CLI's docs/porting.md
      * ("The D3D fence") says and replace the example below. The runtime's
      * "NV2A fence mirror: ... now written by the executor; mirror off" line
-     * confirms it. */
-    xbox_Nv2aMirrorFence(0x00143B58, 0x2C, 0x30);   /* from D3D's fence wait at 0x00139410 */
+     * confirms it.
+     *
+     * The pointer and the two offsets are config/names.toml's (the NTSC
+     * values: 0x00143B58, 0x2C, 0x30, from D3D's fence wait at 0x00139410).
+     * No #if XBR_HAVE here: without the fence the boot stops in D3D's first
+     * wait for idle, so a release whose map lacks one stops the build by
+     * name instead. */
+    xbox_Nv2aMirrorFence(XBR_VA(d3d_device_ptr), XBR_VAL(d3d_fence_put), XBR_VAL(d3d_fence_get));
 
     /* The vblank interrupt, which the toolkit raises only on request. XDK
      * D3D connects the NV2A interrupt during device creation and paces Swap,
@@ -982,13 +991,22 @@ static void host_enhance_init(void)
 {
 #ifdef RECOMP_ENV_HAVE_ENHANCE_KEYS
 #ifdef BLINX_HAVE_MODS
-    static const struct xbox_mod *mods[2];
+    static const struct xbox_mod *mods[4];
+    int n = 0;
 
-    /* draw_distance (draw_distance.c) is a mod: its table goes to the layer
-     * before xbox_enhance_init, which runs its init last and so reads its
-     * keys there. A NULL entry ends the table, so the mod is added only
-     * when built (draw_distance_mod is NULL before mod API v3). */
-    mods[0] = draw_distance_mod();
+    /* draw_distance (draw_distance.c), diag_clamp (diag_clamp.c) and
+     * speed_readout (speed_readout.c) are mods: their table goes to the
+     * layer before xbox_enhance_init, which runs their inits last and so
+     * reads their keys there. A NULL entry ends the table, so a mod is
+     * added only when built (each is NULL before the mod API version it
+     * needs, or in a release without its names). */
+    if ((mods[n] = draw_distance_mod()) != NULL)
+        n++;
+    if ((mods[n] = diag_clamp_mod()) != NULL)
+        n++;
+    if ((mods[n] = speed_readout_mod()) != NULL)
+        n++;
+    mods[n] = NULL;
     xbox_mod_register_table(mods);
 #endif
     xbox_enhance_init(".", NULL);

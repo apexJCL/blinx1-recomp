@@ -1,0 +1,132 @@
+# pal-v3: the port's names (config/names.toml) in PAL, version 3.
+# Written by `blinx1 match`, then checked by hand: a row whose
+# verdict is "reviewed" is kept as it is when match runs again; set it once
+# the address (or value) is checked against the code. A row with no addr or
+# value is unplaced: the code under #if XBR_HAVE(name) is left out of this
+# release, and any other use stops the build (docs/names.md).
+
+[release]
+id = "pal-v3"
+sha256 = ["3e4b51ed5e5a772b15e7d4112f12d37d89dd8bc77ad2528c89e287c32f43c1ab"]
+region = 0x4
+version = 3
+reference = "771b8b6347d6f4348b79911210c1e17f7a1cd1fbfd3356d56bebee74f04bf745"
+
+[[name]]
+name = "gfx_sphere_visible"
+ref = 0x0009AD80
+addr = 0x00034F90
+verdict = "reviewed"
+how = "function (calls)"
+
+[[name]]
+name = "gfx_lens_flare"
+ref = 0x00096BB0
+addr = 0x00030B90
+verdict = "reviewed"
+how = "function (order)"
+
+[[name]]
+name = "cam_proj_11"
+ref = 0x003AE6A0
+addr = 0x0039DE50
+verdict = "reviewed"
+how = "global (referenced)"
+
+[[name]]
+name = "hud_2d_queue_ptr"
+ref = 0x008EC3E4
+addr = 0x008DDF24
+verdict = "reviewed"
+how = "global (referenced)"
+
+[[name]]
+name = "pad_poll_frame"
+ref = 0x000A2DE0
+addr = 0x0009EBC0
+verdict = "reviewed"
+how = "function (exact)"
+
+[[name]]
+name = "gfx_far_cull_dist"
+ref = 0x001D7394
+addr = 0x001C83DC
+verdict = "reviewed"
+how = "global (referenced)"
+
+[[name]]
+name = "pad_states"
+ref = 0x003F09C0
+addr = 0x003E08A0
+verdict = "reviewed"
+how = "by hand: pad_poll_frame 0x9EBC0 differs from NTSC only in address operands; its first load, mov eax, [0x3E08A0]"
+
+[[name]]
+name = "pad_state_size"
+ref = 0x1E4
+value = 0x1E4
+verdict = "reviewed"
+how = "by hand: pad_poll_frame 0x9EBC0, imul 0x1E4 as in NTSC"
+
+[[name]]
+name = "pad_left_x"
+ref = 0x14
+value = 0x14
+verdict = "reviewed"
+how = "by hand: pad_poll_frame 0x9EBC0 writes +0x14 from its LX as in NTSC"
+
+[[name]]
+name = "pad_left_y"
+ref = 0x18
+value = 0x18
+verdict = "reviewed"
+how = "by hand: pad_poll_frame 0x9EBC0 writes +0x18 from its LY as in NTSC"
+
+[[name]]
+name = "player_ptr"
+ref = 0x004FB244
+addr = 0x004EBC24
+verdict = "reviewed"
+how = "by hand: the player update 0xD4C10 (NTSC sub_000D3D50) picks its pad with cmp esi, [0x4EBC24] at 0xD4C71; four writers, 188 refs, as in NTSC"
+
+[[name]]
+name = "player_run_speed"
+ref = 0x30
+value = 0x30
+verdict = "reviewed"
+how = "by hand: 0xD4C10 stores (length - 0.4) x 5/3 (0x18A920, 0x18AC28) to [esi+0x30] at 0xD5BDD, as NTSC 0xD4D46"
+
+[[name]]
+name = "sys_thread_start_1"
+ref = 0x000F9860
+addr = 0x000FA350
+verdict = "reviewed"
+how = "code pointer (pushed by a matched function)"
+
+[[name]]
+name = "sys_thread_start_2"
+ref = 0x000F98D0
+addr = 0x000FA3C0
+verdict = "reviewed"
+how = "code pointer (pushed by a matched function)"
+
+[[name]]
+name = "d3d_device_ptr"
+ref = 0x00143B58
+addr = 0x00142058
+verdict = "reviewed"
+how = "global (referenced)"
+
+[[name]]
+name = "d3d_fence_put"
+ref = 0x2C
+value = 0x30
+verdict = "reviewed"
+how = "by hand: D3D fence wait sub_00138B30 reads [0x142058] +0x34 (GET) and +0x30 (PUT)"
+
+[[name]]
+name = "d3d_fence_get"
+ref = 0x30
+value = 0x34
+verdict = "reviewed"
+how = "by hand: D3D fence wait sub_00138B30 reads [0x142058] +0x34 (GET) and +0x30 (PUT)"

@@ -71,7 +71,10 @@ TDATA/
 saves/
 
 *.pack
+*.xtd
 hud-pack.toml
+textures-pack.toml
+enhance-textures.local.toml
 *.xmv
 *.rws
 *.awd

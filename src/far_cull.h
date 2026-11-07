@@ -7,14 +7,15 @@
  * while the flag at 0x3AE708 is set it rejects a sphere whose near side is
  * more than [0x1D7394] (400.0f) in front of the camera. That fcomp at
  * 0x9AFF3 is the constant's only reader (design D1), so the mod writes the
- * constant itself.
+ * constant itself. Its address is config/names.toml's gfx_far_cull_dist
+ * (the NTSC one above), taken in draw_distance.c: this header stays free of
+ * the generated names so the test driver builds without them.
  */
 #ifndef BLINX_FAR_CULL_H
 #define BLINX_FAR_CULL_H
 
 #include <stdint.h>
 
-#define FAR_CULL_VA          0x1D7394u     /* float, .rdata */
 #define FAR_CULL_STOCK_BITS  0x43C80000u   /* 400.0f as the XBE ships it */
 #define FAR_CULL_STOCK       400.0
 #define FAR_CULL_DIST_MIN    1.0
@@ -43,7 +44,7 @@ enum far_cull_result {
 
 void far_cull_state_init(struct far_cull_state *st);
 
-/* Bring the constant at word (the guest's FAR_CULL_VA) to want. Before
+/* Bring the constant at word (the guest's gfx_far_cull_dist) to want. Before
  * the first write it must be stock, after it it must still be have;
  * otherwise the state goes dead and the constant is never touched again,
  * restore included. */
